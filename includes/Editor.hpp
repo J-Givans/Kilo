@@ -5,10 +5,13 @@
 
 class Editor : public Terminal {
 public:
+    /** Perform low-level keypress reading */
     static char readKey();
 
     /** Map keypresses to editor operations */
     static void processKeypress();
+
+    static void refreshScreen();
 
 private:
     /**
