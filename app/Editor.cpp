@@ -1,7 +1,13 @@
 #include "Editor.hpp"
+#include "posix/lib.hpp"
+#include <cstddef>
+#include <cstdlib>
+#include <system_error>
 
-char Editor::ctrlKey(char key)
+char Editor::readKey()
 {
-    return key &= 0x1f;
 }
 
+void Editor::processKeypress()
+{
+}
