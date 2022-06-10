@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <system_error>
 #include <unistd.h>
+#include <utility>
 
 void posix::tcgetattr(int fd, struct termios& term)
 {
@@ -22,20 +23,48 @@ void posix::tcsetattr(int fd, int optionalActs, struct termios& term)
     }
 }
 
-std::size_t posix::read(int fd, void* buf, std::size_t size)
+std::pair<std::size_t, std::error_code> posix::read(int fd, void* buffer, std::size_t count)
 {
-    ssize_t bytesRead {0};
-    errno = 0;
-    
-    if (size > constants::ssize_max) {
-        throw std::system_error {EINVAL, std::system_category()};
+    std::error_code ec {};
+
+    if (count > constants::ssize_max) {
+        ec.assign(EINVAL, std::system_category());
     }
-   
-    bytesRead = ::read(fd, buf, size);
+
+    errno = 0;
+    ssize_t bytesRead { ::read(fd, buffer, count) };
 
     if (bytesRead < 0) {
-        throw std::system_error {errno, std::system_category()};
+        ec.assign(errno, std::system_category());
+        return std::make_pair(0, ec);
     }
 
-    return bytesRead;
+    ec = {};
+    return std::make_pair(static_cast<std::size_t>(bytesRead), ec);
+}
+
+std::pair<std::size_t, std::error_code> posix::write(int fd, void const* buffer, std::size_t count)
+{
+    std::error_code ec {};
+
+    if (count > constants::ssize_max) {
+        ec.assign(EINVAL, std::system_category());
+        return std::make_pair(0, ec);
+    }
+
+    errno = 0;
+    ssize_t written { ::write(fd, buffer, count) };
+
+    if (written < 0) {
+        ec.assign(errno, std::system_category());
+        return std::make_pair(0, ec);
+    }
+    else if (static_cast<std::size_t>(written) < count) {
+        ec.assign(ENOSPC, std::system_category());
+    }
+    else {
+        ec = {};
+    }
+
+    return std::make_pair(static_cast<std::size_t>(written), ec);
 }

@@ -12,7 +12,10 @@ namespace posix {
 
 void tcgetattr(int fd, struct termios& term);
 void tcsetattr(int fd, int optionalActs, struct termios& term);
-std::size_t read(int fd, void* buf, size_t nbytes);
+
+std::pair<std::size_t, std::error_code> read(int fd, void* buffer, std::size_t count);
+
+std::pair<std::size_t, std::error_code> write(int fd, void const* buffer, std::size_t count);
 
 }
 
