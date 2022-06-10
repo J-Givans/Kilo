@@ -2,5 +2,12 @@ cmake_minimum_required(VERSION 3.15)
 
 project(Kilo VERSION 0.1 LANGUAGES CXX)
 
-add_compile_options(-std=c++17 -Wall -Wextra)
-add_executable(kilo main.cpp Terminal.cpp Terminal.hpp lib.hpp lib.cpp)
+if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+    set(CMAKE_CXX_STANDARD 17)
+
+    set(CMAKE_CXX_EXTENSIONS OFF)
+endif()
+
+add_subdirectory(src)
+
+add_subdirectory(app)
