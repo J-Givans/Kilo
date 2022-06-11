@@ -3,6 +3,8 @@
 
 #include <termios.h>
 
+#include <sys/ioctl.h>
+
 class Terminal {
 public:
     Terminal();
@@ -16,7 +18,8 @@ public:
     void disableRawMode();
 
 private:
-    struct termios m_terminal;
+    struct termios m_terminal {};
+    struct winsize m_windowSize {};
 };
 
 #endif

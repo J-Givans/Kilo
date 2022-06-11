@@ -6,7 +6,7 @@
 class Editor : public Terminal {
 public:
     Editor() = default;
-    ~Editor() = default;
+    ~Editor();
     
     /** Disable copy and move semantics */
     Editor(Editor const&) = delete;
@@ -29,6 +29,8 @@ private:
     {
         return key &= 0x1f;
     }
+
+    static void drawRows();
 };
 
 #endif
