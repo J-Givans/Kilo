@@ -5,25 +5,47 @@
 #include <unistd.h>
 #include <utility>
 
-void posix::tcgetattr(int fd, struct termios& term)
+/** 
+ * Wrapper function for the POSIX tcgetattr()
+ * This function does not throw any exceptions and is therefore marked noexcept
+*/
+[[nodiscard]]
+std::error_code posix::tcgetattr(int fd, struct termios& term) noexcept
 {
+    std::error_code ec;
     errno = 0;
 
     if (::tcgetattr(fd, &term) == -1) {
-        throw std::system_error {errno, std::system_category()};
+        ec.assign(errno, std::system_category());
     }
+
+    ec = {};
+    return ec;
 }
 
-void posix::tcsetattr(int fd, int optionalActs, struct termios& term)
+/** 
+ * Wrapper function for the POSIX tcsetattr()
+ * This function does not throw any exceptions and is therefore marked noexcept
+*/
+[[nodiscard]]
+std::error_code posix::tcsetattr(int fd, int optionalActs, struct termios& term) noexcept
 {
+    std::error_code ec;
     errno = 0;
 
     if (::tcsetattr(fd, optionalActs, &term) == -1) {
-        throw std::system_error {errno, std::system_category()};
+        ec.assign(errno, std::system_category());
     }
+
+    ec = {};
+    return ec;
 }
 
-std::pair<std::size_t, std::error_code> posix::read(int fd, void* buffer, std::size_t count)
+/** 
+ * Wrapper function for the POSIX read()
+ * This function does not throw any exceptions and is therefore marked noexcept
+*/
+std::pair<std::size_t, std::error_code> posix::read(int fd, void* buffer, std::size_t count) noexcept
 {
     std::error_code ec {};
 
@@ -43,7 +65,12 @@ std::pair<std::size_t, std::error_code> posix::read(int fd, void* buffer, std::s
     return std::make_pair(static_cast<std::size_t>(bytesRead), ec);
 }
 
-std::pair<std::size_t, std::error_code> posix::write(int fd, void const* buffer, std::size_t count)
+
+/** 
+ * Wrapper function for the POSIX write()
+ * This function does not throw any exceptions and is therefore marked noexcept
+*/
+std::pair<std::size_t, std::error_code> posix::write(int fd, void const* buffer, std::size_t count) noexcept
 {
     std::error_code ec {};
 

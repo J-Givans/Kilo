@@ -9,11 +9,10 @@
 
 void Terminal::enableRawMode()
 {
-    try {
-        posix::tcgetattr(STDIN_FILENO, m_terminal);
-    }
-    catch (std::system_error const& err) {
-        std::cerr << err.code().message() << ' ' << err.what() << '\n';
+    std::error_code ec { posix::tcgetattr(STDIN_FILENO, m_terminal) };
+
+    if (ec) {
+        throw std::system_error {ec, "tcgetattr failed while enabling raw mode."};
     }
 
     struct termios copy {m_terminal};
@@ -25,30 +24,40 @@ void Terminal::enableRawMode()
     copy.c_cc[VMIN] = 0;
     copy.c_cc[VTIME] = 1;
 
-    try {
-        posix::tcsetattr(STDIN_FILENO, TCSAFLUSH, copy);
-    }
-    catch (std::system_error const& err) {
-        std::cerr << err.code().message() << ' ' << err.what() << '\n';
+    ec = posix::tcsetattr(STDIN_FILENO, TCSAFLUSH, copy);
+
+    if (ec) {
+        throw std::system_error {ec, "tcsetattr failed while enabling raw mode."};
     }
 }
 
 void Terminal::disableRawMode()
 {
-    try {
-        posix::tcsetattr(STDIN_FILENO, TCSAFLUSH, m_terminal);
-    }
-    catch (std::system_error const& err) {
-        std::cerr << err.code().message() << ' ' << err.what() << '\n';
+    std::error_code ec {posix::tcsetattr(STDIN_FILENO, TCSAFLUSH, m_terminal)};
+
+    if (ec) {
+        throw std::system_error {ec, "tcsetattribute failed while disabling raw mode."};
     }
 }
 
 Terminal::Terminal()
 {
-    enableRawMode();
+    try {
+        enableRawMode();
+    }
+    catch (std::system_error const& err) {
+        std::cerr << err.what() << "\r\n";
+        std::cerr << err.code() << ": " << err.code().message() << "\r\n";
+    }
 }
 
 Terminal::~Terminal()
 {
-    disableRawMode();
+    try {
+        disableRawMode();
+    }
+    catch (std::system_error const& err) {
+        std::cerr << err.what() << "\r\n";
+        std::cerr << err.code() << ": " << err.code().message() << "\r\n";
+    }
 }

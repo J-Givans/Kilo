@@ -5,6 +5,13 @@
 
 class Editor : public Terminal {
 public:
+    Editor() = default;
+    ~Editor() = default;
+    
+    /** Disable copy and move semantics */
+    Editor(Editor const&) = delete;
+    Editor& operator=(Editor const&) = delete;
+
     /** Perform low-level keypress reading */
     static char readKey();
 

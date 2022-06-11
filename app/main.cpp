@@ -4,11 +4,11 @@
 
 int main()
 {
-    Editor kilo {};
+    static Editor kilo {};
 
     while (true) {
-        kilo.refreshScreen();
-        kilo.processKeypress();
+        Editor::refreshScreen();
+        Editor::processKeypress();
     }
 
     return EXIT_SUCCESS;

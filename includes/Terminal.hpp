@@ -8,6 +8,7 @@ public:
     Terminal();
     ~Terminal();
 
+    /** Disable copy and move semantics */
     Terminal(Terminal const&) = delete;
     Terminal& operator=(Terminal const&) = delete;
 
