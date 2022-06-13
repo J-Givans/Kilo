@@ -3,7 +3,7 @@
 
 #include <termios.h>
 
-#include <sys/ioctl.h>
+#include <utility>
 
 class Terminal {
 public:
@@ -19,7 +19,6 @@ public:
 
 private:
     struct termios m_terminal {};
-    struct winsize m_windowSize {};
 };
 
 #endif

@@ -4,6 +4,7 @@
 #include <cstddef>
 #include <termios.h>
 #include <unistd.h>
+#include <sys/ioctl.h>
 
 #include <system_error>
 #include <cerrno>

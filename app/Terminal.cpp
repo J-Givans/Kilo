@@ -1,11 +1,13 @@
 #include "Terminal.hpp"
 #include "posix/lib.hpp"
 
+#include <sys/ioctl.h>
 #include <termios.h>
 #include <unistd.h>
 
 #include <system_error>
 #include <iostream>
+#include <utility>
 
 void Terminal::enableRawMode()
 {

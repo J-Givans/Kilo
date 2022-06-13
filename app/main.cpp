@@ -5,9 +5,11 @@
 int main()
 {
     static Editor kilo {};
+    
+    Editor::init(kilo);
 
     while (true) {
-        Editor::refreshScreen();
+        kilo.refreshScreen();
         Editor::processKeypress();
     }
 

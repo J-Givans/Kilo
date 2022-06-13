@@ -3,6 +3,9 @@
 
 #include "Terminal.hpp"
 
+#include <sys/ioctl.h>
+#include <utility>
+
 class Editor : public Terminal {
 public:
     Editor() = default;
@@ -18,7 +21,9 @@ public:
     /** Map keypresses to editor operations */
     static void processKeypress();
 
-    static void refreshScreen();
+    void refreshScreen() const;
+
+    static void init(Editor const& editor);
 
 private:
     /**
@@ -30,7 +35,12 @@ private:
         return key &= 0x1f;
     }
 
-    static void drawRows();
+    void drawRows() const;
+
+    std::pair<unsigned short, unsigned short> getWindowSize() const;
+
+private:
+    struct winsize m_window {};
 };
 
 #endif
