@@ -1,17 +1,19 @@
 #include "Editor.hpp"
 #include "posix/lib.hpp"
 
-#include <asm-generic/ioctls.h>
 #include <cstddef>
 #include <cstdlib>
 #include <iostream>
 #include <system_error>
 #include <utility>
 
-/**
- * Clear the screen and reposition the cursor on destruction
- * This handles both cases of program termination, that is, EXIT_SUCCESS and EXIT_FAILURE
- */
+Editor::Editor()
+{
+    init();
+}
+
+/// Clear the screen and reposition the cursor on destruction 
+/// This handles both cases of program termination, that is, EXIT_SUCCESS and EXIT_FAILURE
 Editor::~Editor()
 {
     // This way, if an error occurs in the middle of rendering the screen,
@@ -58,36 +60,28 @@ void Editor::refreshScreen() const
     posix::write(STDOUT_FILENO, "\x1b[H", 3);   // reposition the cursor to the top-left corner
 }
 
-/**
- * Draw a column of tildes on the left-hand side of the screen
- * A tilde is drawn at the beginning of any lines that come after the EOF being edited
- */
+/// Draw a column of tildes on the left-hand side of the screen 
+/// A tilde is drawn at the beginning of any lines that come after the EOF being edited
 void Editor::drawRows() const
-{
-    auto [rows, cols] {getWindowSize()};
-    
-    for (int y {}; y < rows; ++y) {
-        posix::write(STDOUT_FILENO, "~\r\n", 3);
-    }
-}
-
-std::pair<unsigned short, unsigned short> Editor::getWindowSize() const
 {   
-    errno = 0;
+    for (int y {}; y < m_windowDimensions.first; ++y) {
+        posix::write(STDOUT_FILENO, "~", 1);
 
-    if (auto ret {::ioctl(STDOUT_FILENO, TIOCGWINSZ, &m_window)}; ret == -1) {
-        throw std::system_error {errno, std::system_category()};
+        if (y < m_windowDimensions.first - 1) {
+            posix::write(STDOUT_FILENO, "\r\n", 2);
+        }
     }
-
-    return std::make_pair(m_window.ws_row, m_window.ws_col);
 }
 
-void Editor::init(Editor const& editor)
+/// Set the Editor's window dimensions by calling Terminal::getWindowSize()
+void Editor::init()
 {
     try {
-        editor.getWindowSize();
+        m_windowDimensions = Terminal::getWindowSize();
     }
     catch (std::system_error const& err) {
         std::cerr << err.code() << ": " << err.code().message() << '\n';
+        std::cerr << "Failed to set Editor window dimensions.\n";
+        std::exit(EXIT_FAILURE);
     }
 }

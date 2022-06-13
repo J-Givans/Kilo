@@ -5,8 +5,6 @@
 int main()
 {
     static Editor kilo {};
-    
-    Editor::init(kilo);
 
     while (true) {
         kilo.refreshScreen();
