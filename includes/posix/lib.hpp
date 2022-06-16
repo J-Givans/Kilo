@@ -11,16 +11,15 @@
 
 namespace posix {
 
-[[nodiscard]]
-std::error_code tcgetattr(int fd, struct termios& term) noexcept;
+    bool tcgetattr(int fd, struct termios& terminal, std::error_code& ec);
+    bool tcsetattr(int fd, int optionalActions, struct termios& terminal, std::error_code& ec);
 
-[[nodiscard]]
-std::error_code tcsetattr(int fd, int optionalActs, struct termios& term) noexcept;
+    std::pair<std::size_t, std::error_code> read(int fd, void* buffer, std::size_t count) noexcept;
 
-std::pair<std::size_t, std::error_code> read(int fd, void* buffer, std::size_t count) noexcept;
+    std::pair<std::size_t, std::error_code> write(int fd, void const* buffer, std::size_t count) noexcept;
 
-std::pair<std::size_t, std::error_code> write(int fd, void const* buffer, std::size_t count) noexcept;
-
+    std::size_t read(int fd, void* buffer, std::size_t count, std::error_code& ec);
+    std::size_t write(int fd, void const* buffer, std::size_t count, std::error_code& ec);
 }
 
 namespace posix::constants {

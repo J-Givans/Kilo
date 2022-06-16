@@ -1,7 +1,7 @@
 #include "Terminal.hpp"
 #include "posix/lib.hpp"
 
-#include <asm-generic/ioctls.h>
+#include <cstdlib>
 #include <sys/ioctl.h>
 #include <termios.h>
 #include <unistd.h>
@@ -12,37 +12,63 @@
 
 void Terminal::enableRawMode()
 {
-    std::error_code ec { posix::tcgetattr(STDIN_FILENO, m_terminal) };
+    std::error_code ec {};
+    using namespace posix;
 
-    if (ec) {
-        throw std::system_error {ec, "tcgetattr failed while enabling raw mode."};
+    if (!tcgetattr(STDIN_FILENO, m_terminal, ec)) {
+        throw std::system_error {ec, "Failed to get attributes of terminal"};
     }
 
     struct termios copy {m_terminal};
 
+    // Ignore BREAK condition, no SIGINT on BREAK condition, don't mark parity condition, don't strip 8th bit from input
+    // Don't map NL to CR on input, don't ignore CR on input, don't map CR to NL on input, disable start/stop output flow ctrl
     copy.c_iflag &= ~(IGNBRK | BRKINT | PARMRK | ISTRIP | INLCR | IGNCR | ICRNL | IXON);
+    
+    // Disable all output processing
     copy.c_oflag &= ~(OPOST);
+
+    // Disable echoing (except for new lines), canonical mode, signal chars, and extended input processing 
     copy.c_lflag &= ~(ECHO | ECHONL | ICANON | ISIG | IEXTEN);
+
+    // Set 8 bits/char
     copy.c_cflag |= (CS8);
+
+    // Read with timeout; read() returns as soon as at least 1 byte is abailable, or when TIME tenths of a second have elapsed
     copy.c_cc[VMIN] = 0;
     copy.c_cc[VTIME] = 1;
 
-    ec = posix::tcsetattr(STDIN_FILENO, TCSAFLUSH, copy);
+    if (!tcsetattr(STDIN_FILENO, TCSAFLUSH, copy, ec)) {
+        throw std::system_error {ec, "Failed to set terminal attributes"};
+    }
 
-    if (ec) {
-        throw std::system_error {ec, "tcsetattr failed while enabling raw mode."};
+    // Verify that the changes stuck
+    // tctsetattr can return 0 on partial success
+    if (!posix::tcgetattr(STDIN_FILENO, copy, ec)) {
+        posix::tcsetattr(STDIN_FILENO, TCSAFLUSH, m_terminal, ec);
+        throw std::system_error {ec, ""};
+    }
+
+    // Only some of the changes were made.
+    // Restore the original settings
+    if ((copy.c_lflag & (ECHO | ECHONL | ICANON | ISIG | IEXTEN)) || 
+        (copy.c_iflag & (IGNBRK | BRKINT | PARMRK | ISTRIP | INLCR | IGNCR | ICRNL | IXON)) || 
+        (copy.c_oflag & (OPOST))  || (copy.c_cflag &(CS8)) != CS8 || (copy.c_cc[VMIN] != 0) || (copy.c_cc[VTIME]) != 1) {
+        posix::tcsetattr(STDIN_FILENO, TCSAFLUSH, m_terminal, ec);
     }
 }
 
 void Terminal::disableRawMode()
 {
-    std::error_code ec {posix::tcsetattr(STDIN_FILENO, TCSAFLUSH, m_terminal)};
+    using posix::tcsetattr;
 
-    if (ec) {
-        throw std::system_error {ec, "tcsetattribute failed while disabling raw mode."};
+    if (std::error_code error; !posix::tcsetattr(STDIN_FILENO, TCSAFLUSH, m_terminal, error)) {
+        throw std::system_error {error, "Failed to reset terminal attributes."};
     }
 }
 
+/// Attempts to set the terminal attributes to raw mode during construction
+/// If construction fails then we exit the program with a fail status code as it is in an invalid state
 Terminal::Terminal()
 {
     try {
@@ -51,6 +77,8 @@ Terminal::Terminal()
     catch (std::system_error const& err) {
         std::cerr << err.what() << "\r\n";
         std::cerr << err.code() << ": " << err.code().message() << "\r\n";
+
+        std::exit(EXIT_FAILURE);
     }
 }
 
@@ -62,6 +90,8 @@ Terminal::~Terminal()
     catch (std::system_error const& err) {
         std::cerr << err.what() << "\r\n";
         std::cerr << err.code() << ": " << err.code().message() << "\r\n";
+
+        std::exit(EXIT_FAILURE);
     }
 }
 
