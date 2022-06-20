@@ -30,7 +30,7 @@ Editor::~Editor()
     posix::write(STDOUT_FILENO, "\x1b[H", 3);   // reposition the cursor to the top-left corner
 }
 
-char Editor::readKey()
+int Editor::readKey()
 {
     char c;
     std::size_t read;
@@ -38,6 +38,10 @@ char Editor::readKey()
     while ((read = posix::read(STDIN_FILENO, &c, 1)) != 1) {
     }
 
+    // If we read an escape character, immediately read 2 more bytes into seq
+    // If either of these reads times out, assume the user pressed ESC and return that
+    // Otherwise, look to see if the escape sequence if an arrow key sequence
+    // If it is, return the corresponding w a s d character, else return ESC
     if (c == '\x1b') {
         char seq[3];
 
@@ -46,10 +50,10 @@ char Editor::readKey()
 
         if (seq[0] == '[') {
             switch (seq[1]) {
-                case 'A': return 'w';
-                case 'B': return 's';
-                case 'C': return 'd';
-                case 'D': return 'a';
+                case 'A': return ARROW_UP;
+                case 'B': return ARROW_DOWN;
+                case 'C': return ARROW_RIGHT;
+                case 'D': return ARROW_LEFT;
             }
         }
 
@@ -62,7 +66,7 @@ char Editor::readKey()
 
 void Editor::processKeypress()
 {
-    char c {readKey()};
+    int c {readKey()};
     constexpr char quit { 'q' & 0x1f };
 
     switch (c) {
@@ -70,8 +74,9 @@ void Editor::processKeypress()
         std::exit(EXIT_SUCCESS);
         break;
 
-    case 'w': case 's': case 'a': case 'd':
+    case ARROW_UP: case ARROW_DOWN: case ARROW_LEFT: case ARROW_RIGHT:
         moveCursor(c);
+        break;
     }
 }
 
@@ -140,23 +145,23 @@ void Editor::init()
     m_windowDimensions = Terminal::getWindowSize();
 }
 
-void Editor::moveCursor(char const& key)
+void Editor::moveCursor(int const& key)
 {
     switch (key) {
-    case 'a':
-        --cursorX;
+    case ARROW_LEFT:
+        if (cursorX != 0) { --cursorX; }
         break;
 
-    case 'd':
-        ++cursorX;
+    case ARROW_RIGHT:
+        if (cursorX != m_windowDimensions.second - 1) { ++cursorX; }
         break;
 
-    case 'w':
-        --cursorY;
+    case ARROW_UP:
+        if (cursorY != 0) { --cursorY; }
         break;
 
-    case 's':
-        ++cursorY;
+    case ARROW_DOWN:
+        if (cursorY != m_windowDimensions.first - 1) { ++cursorY; }
         break;
     }
 }

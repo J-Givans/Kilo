@@ -18,7 +18,7 @@ public:
     Editor& operator=(Editor const&) = delete;
 
     /// Perform low-level keypress reading
-    static char readKey();
+    static int readKey();
 
     /// Map keypresses to editor operations
     void processKeypress();
@@ -38,7 +38,7 @@ private:
     void drawRows(std::string& buffer) const;
 
     /// Move the cursor when a key is pressed
-    void moveCursor(char const& key);
+    void moveCursor(int const& key);
 
 private:
     std::pair<unsigned short, unsigned short> m_windowDimensions;
@@ -50,6 +50,14 @@ private:
     int cursorY {};
     
     static constexpr std::string_view KILO_VERSION {"0.0.1"};
+
+    enum Keys {
+        // Arrow keys are represented using ints so that they don't conflict with regular w a s d keypresses
+        ARROW_LEFT = 1000,
+        ARROW_RIGHT,
+        ARROW_UP,
+        ARROW_DOWN
+    };
 };
 
 #endif
