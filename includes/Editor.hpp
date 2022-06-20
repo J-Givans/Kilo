@@ -21,7 +21,7 @@ public:
     static char readKey();
 
     /// Map keypresses to editor operations
-    static void processKeypress();
+    void processKeypress();
 
     void refreshScreen() const;
 
@@ -30,15 +30,24 @@ public:
 private:
     /// Bitwise-ANDs a char with the value 0x1f (or 0b00011111), thus setting the upper 3 bits of the character to 0
     /// This mirrors what the CTRL key does in the terminal  
-    static constexpr char ctrlKey(char key)
+    inline constexpr char ctrlKey(char key)
     {
         return key &= 0x1f;
     }
 
     void drawRows(std::string& buffer) const;
 
+    /// Move the cursor when a key is pressed
+    void moveCursor(char const& key);
+
 private:
     std::pair<unsigned short, unsigned short> m_windowDimensions;
+    
+    /// Horizontal coordinate (column) of the cursor
+    int cursorX {};
+
+    /// Vertical coordinate (row) of the cursor
+    int cursorY {};
     
     static constexpr std::string_view KILO_VERSION {"0.0.1"};
 };

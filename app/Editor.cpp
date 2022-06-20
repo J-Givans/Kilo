@@ -2,6 +2,7 @@
 #include "posix/lib.hpp"
 
 #include <cstddef>
+#include <cstdio>
 #include <cstdlib>
 #include <iostream>
 #include <string_view>
@@ -10,7 +11,13 @@
 
 Editor::Editor()
 {
-    init();
+    try {
+        init();       
+    }
+    catch (std::system_error const& err) {
+        std::cerr << err.code() << ": " << err.code().message() << '\n';
+        std::exit(EXIT_FAILURE);
+    }
 }
 
 /// Clear the screen and reposition the cursor on destruction 
@@ -43,11 +50,15 @@ char Editor::readKey()
 void Editor::processKeypress()
 {
     char c {readKey()};
+    constexpr char quit { 'q' & 0x1f };
 
     switch (c) {
-    case ctrlKey('q'):
+    case quit:
         std::exit(EXIT_SUCCESS);
         break;
+
+    case 'w': case 's': case 'a': case 'd':
+        moveCursor(c);
     }
 }
 
@@ -60,7 +71,10 @@ void Editor::refreshScreen() const
 
     drawRows(strbuf);     // draw column of tildes
 
-    strbuf += "\x1b[H";
+    char buffer[32];
+    std::snprintf(buffer, sizeof buffer, "\x1b[%d;%dH", cursorY + 1, cursorX + 1);
+    strbuf += buffer;
+
     strbuf += "\x1b[?25h";  // show the cursor immediately after repainting
     
     // Reposition the cursor to the top-left corner
@@ -110,12 +124,26 @@ void Editor::drawRows(std::string& buffer) const
 /// Set the Editor's window dimensions by calling Terminal::getWindowSize()
 void Editor::init()
 {
-    try {
-        m_windowDimensions = Terminal::getWindowSize();
-    }
-    catch (std::system_error const& err) {
-        std::cerr << err.code() << ": " << err.code().message() << '\n';
-        std::cerr << "Failed to set Editor window dimensions.\n";
-        std::exit(EXIT_FAILURE);
+    m_windowDimensions = Terminal::getWindowSize();
+}
+
+void Editor::moveCursor(char const& key)
+{
+    switch (key) {
+    case 'a':
+        --cursorX;
+        break;
+
+    case 'd':
+        ++cursorX;
+        break;
+
+    case 'w':
+        --cursorY;
+        break;
+
+    case 's':
+        ++cursorY;
+        break;
     }
 }

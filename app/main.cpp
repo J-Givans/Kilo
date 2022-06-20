@@ -8,7 +8,7 @@ int main()
 
     while (true) {
         kilo.refreshScreen();
-        Editor::processKeypress();
+        kilo.processKeypress();
     }
 
     return EXIT_SUCCESS;
