@@ -33,18 +33,31 @@ Editor::~Editor()
 char Editor::readKey()
 {
     char c;
-    std::pair<std::size_t, std::error_code> result;
+    std::size_t read;
 
-    do {
-        result = posix::read(STDIN_FILENO, &c, 1);
-
-        if (result.second && result.second != std::errc::resource_unavailable_try_again) {
-            throw std::system_error {result.second, "read failed"};
-        }
+    while ((read = posix::read(STDIN_FILENO, &c, 1)) != 1) {
     }
-    while (result.first != 1);
 
-    return c;
+    if (c == '\x1b') {
+        char seq[3];
+
+        if (posix::read(STDIN_FILENO, &seq[0], 1) != 1) { return '\x1b'; }
+        if (posix::read(STDIN_FILENO, &seq[1], 1) != 1) { return '\x1b'; }
+
+        if (seq[0] == '[') {
+            switch (seq[1]) {
+                case 'A': return 'w';
+                case 'B': return 's';
+                case 'C': return 'd';
+                case 'D': return 'a';
+            }
+        }
+
+        return '\x1b';
+    }
+    else {
+        return c;
+    }
 }
 
 void Editor::processKeypress()
