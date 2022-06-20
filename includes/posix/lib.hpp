@@ -10,9 +10,8 @@
 #include <cerrno>
 
 namespace posix {
-
-    bool tcgetattr(int fd, struct termios& terminal, std::error_code& ec);
-    bool tcsetattr(int fd, int optionalActions, struct termios& terminal, std::error_code& ec);
+    void tcgetattr(int fd, termios& termios);
+    void tcsetattr(int fd, int optionalActions, termios& termios);
 
     std::pair<std::size_t, std::error_code> read(int fd, void* buffer, std::size_t count) noexcept;
 

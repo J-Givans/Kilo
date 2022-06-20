@@ -4,7 +4,9 @@
 #include "Terminal.hpp"
 
 #include <sys/ioctl.h>
+
 #include <utility>
+#include <string>
 
 class Editor : public Terminal {
 public:
@@ -33,10 +35,12 @@ private:
         return key &= 0x1f;
     }
 
-    void drawRows() const;
+    void drawRows(std::string& buffer) const;
 
 private:
     std::pair<unsigned short, unsigned short> m_windowDimensions;
+    
+    static constexpr std::string_view KILO_VERSION {"0.0.1"};
 };
 
 #endif

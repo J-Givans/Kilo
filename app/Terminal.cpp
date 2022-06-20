@@ -12,12 +12,7 @@
 
 void Terminal::enableRawMode()
 {
-    std::error_code ec {};
-    using namespace posix;
-
-    if (!tcgetattr(STDIN_FILENO, m_terminal, ec)) {
-        throw std::system_error {ec, "Failed to get attributes of terminal"};
-    }
+    posix::tcgetattr(STDIN_FILENO, m_terminal);
 
     struct termios copy {m_terminal};
 
@@ -38,33 +33,12 @@ void Terminal::enableRawMode()
     copy.c_cc[VMIN] = 0;
     copy.c_cc[VTIME] = 1;
 
-    if (!tcsetattr(STDIN_FILENO, TCSAFLUSH, copy, ec)) {
-        throw std::system_error {ec, "Failed to set terminal attributes"};
-    }
-
-    // Verify that the changes stuck
-    // tctsetattr can return 0 on partial success
-    if (!posix::tcgetattr(STDIN_FILENO, copy, ec)) {
-        posix::tcsetattr(STDIN_FILENO, TCSAFLUSH, m_terminal, ec);
-        throw std::system_error {ec, ""};
-    }
-
-    // Only some of the changes were made.
-    // Restore the original settings
-    if ((copy.c_lflag & (ECHO | ECHONL | ICANON | ISIG | IEXTEN)) || 
-        (copy.c_iflag & (IGNBRK | BRKINT | PARMRK | ISTRIP | INLCR | IGNCR | ICRNL | IXON)) || 
-        (copy.c_oflag & (OPOST))  || (copy.c_cflag &(CS8)) != CS8 || (copy.c_cc[VMIN] != 0) || (copy.c_cc[VTIME]) != 1) {
-        posix::tcsetattr(STDIN_FILENO, TCSAFLUSH, m_terminal, ec);
-    }
+    posix::tcsetattr(STDIN_FILENO, TCSAFLUSH, copy);
 }
 
 void Terminal::disableRawMode()
 {
-    using posix::tcsetattr;
-
-    if (std::error_code error; !posix::tcsetattr(STDIN_FILENO, TCSAFLUSH, m_terminal, error)) {
-        throw std::system_error {error, "Failed to reset terminal attributes."};
-    }
+    posix::tcsetattr(STDIN_FILENO, TCSAFLUSH, m_terminal);
 }
 
 /// Attempts to set the terminal attributes to raw mode during construction

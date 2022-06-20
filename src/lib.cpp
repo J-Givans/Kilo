@@ -61,32 +61,26 @@ std::pair<std::size_t, std::error_code> posix::write(int fd, void const* buffer,
     return std::make_pair(static_cast<std::size_t>(written), ec);
 }
 
-/// Wrapper for POSIX-style tcgetattr()
-bool posix::tcgetattr(int fd, struct termios& terminal, std::error_code& ec)
+/// Wrapper function for tcgetattr
+void posix::tcgetattr(int fd, termios& termios)
 {
     errno = 0;
 
-    if (::tcgetattr(fd, &terminal) == -1) {
+    if (std::error_code ec {}; ::tcgetattr(fd, &termios) == -1) {
         ec.assign(errno, std::system_category());
-        return false;
+        throw std::system_error {ec, "Failed to get terminal attributes."};
     }
-
-    ec = {};
-    return true;
 }
 
-/// Wrapper for POSIX-style tcsetattr()
-bool posix::tcsetattr(int fd, int optionalActions, struct termios& terminal, std::error_code& ec)
+/// Wrapper function for tcsetattr
+void posix::tcsetattr(int fd, int optionalActions, termios& termios)
 {
     errno = 0;
 
-    if (::tcsetattr(fd, optionalActions, &terminal) == -1) {
+    if (std::error_code ec {}; ::tcsetattr(fd, optionalActions, &termios) == -1) {
         ec.assign(errno, std::system_category());
-        return false;
+        throw std::system_error {ec, "Failed to set terminal attributes."};
     }
-
-    ec = {};
-    return true;
 }
 
 /// Wrapper function for POSIX-style read()

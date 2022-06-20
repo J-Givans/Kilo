@@ -4,6 +4,7 @@
 #include <cstddef>
 #include <cstdlib>
 #include <iostream>
+#include <string_view>
 #include <system_error>
 #include <utility>
 
@@ -52,23 +53,56 @@ void Editor::processKeypress()
 
 void Editor::refreshScreen() const
 {
-    posix::write(STDOUT_FILENO, "\x1b[2J", 4);  // clear the screen
-    posix::write(STDOUT_FILENO, "\x1b[H", 3);   // reposition the cursor to the top-left corner
+    std::string strbuf {};
 
-    drawRows();     // draw column of tildes
+    strbuf += "\x1b[?25l";  // hide the cursor while repainting
+    strbuf += "\x1b[H";     // reposition the cursor to the top-left corner
 
-    posix::write(STDOUT_FILENO, "\x1b[H", 3);   // reposition the cursor to the top-left corner
+    drawRows(strbuf);     // draw column of tildes
+
+    strbuf += "\x1b[H";
+    strbuf += "\x1b[?25h";  // show the cursor immediately after repainting
+    
+    // Reposition the cursor to the top-left corner
+    posix::write(STDOUT_FILENO, strbuf.c_str(), strbuf.size());
 }
 
 /// Draw a column of tildes on the left-hand side of the screen 
 /// A tilde is drawn at the beginning of any lines that come after the EOF being edited
-void Editor::drawRows() const
+void Editor::drawRows(std::string& buffer) const
 {   
-    for (int y {}; y < m_windowDimensions.first; ++y) {
-        posix::write(STDOUT_FILENO, "~", 1);
+    auto [rows, columns] = m_windowDimensions;
+
+    for (int y {}; y < rows; ++y) {
+        if (y == rows / 3) {
+            std::string welcome {"Kilo editor -- version "};
+            welcome += KILO_VERSION;
+
+            if (welcome.size() > columns) {
+                welcome.resize(columns);
+            }
+
+            auto padding { (columns - welcome.length()) / 2 };
+
+            if (padding) {
+                buffer += '~';
+                --padding;
+            }
+
+            while (--padding) {
+                buffer += " ";
+            }
+
+            buffer += welcome;
+        }
+        else {
+            buffer += '~';
+        }
+    
+        buffer += "\x1b[K";     // clear lines one at a time
 
         if (y < m_windowDimensions.first - 1) {
-            posix::write(STDOUT_FILENO, "\r\n", 2);
+            buffer += "\r\n";
         }
     }
 }
