@@ -92,10 +92,9 @@ int Editor::readKey()
 void Editor::processKeypress()
 {
     int c {readKey()};
-    constexpr char quit { 'q' & 0x1f };
 
     switch (c) {
-    case quit:
+    case ctrlKey('q'):
         std::exit(EXIT_SUCCESS);
         break;
 
