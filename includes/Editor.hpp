@@ -44,7 +44,7 @@ private:
     
     static constexpr std::string_view KILO_VERSION {"0.0.1"};
 
-    enum Keys {
+    enum Keys { 
         // Arrow keys are represented using ints so that they don't conflict with regular w a s d keypresses
         ARROW_LEFT = 1000,
         ARROW_RIGHT,
