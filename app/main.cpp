@@ -5,6 +5,7 @@
 int main()
 {
     static Editor kilo {};
+    kilo.open();
 
     while (true) {
         kilo.refreshScreen();
