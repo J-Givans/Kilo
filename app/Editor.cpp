@@ -91,6 +91,8 @@ int Editor::readKey()
 
 void Editor::processKeypress()
 {
+    auto [rows, cols] = m_window.getWindowSize();
+
     int c {readKey()};
 
     switch (c) {
@@ -103,12 +105,12 @@ void Editor::processKeypress()
         break;
 
     case END:
-        cursor.x = m_windowDimensions.second - 1;
+        cursor.x = cols - 1;
         break;
 
     case PAGE_UP: case PAGE_DOWN: 
         {
-            int iterations { m_windowDimensions.first };
+            auto iterations { rows };
 
             while (--iterations) {
                 cursor.moveCursor(c == PAGE_UP ? ARROW_UP : ARROW_DOWN, m_window);
@@ -184,5 +186,4 @@ void Editor::drawRows(std::string& buffer) const
 /// Set the Editor's window dimensions by calling Terminal::getWindowSize()
 void Editor::init()
 {
-    m_windowDimensions = Terminal::getWindowSize();
 }
