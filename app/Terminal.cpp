@@ -68,15 +68,3 @@ Terminal::~Terminal()
         std::exit(EXIT_FAILURE);
     }
 }
-
-std::pair<unsigned short, unsigned short> Terminal::getWindowSize()
-{
-    struct winsize window;
-    errno = 0;
-
-    if (::ioctl(STDOUT_FILENO, TIOCGWINSZ, &window) == -1) {
-        throw std::system_error {errno, std::system_category()};
-    }
-
-    return std::make_pair(window.ws_row, window.ws_col);
-}

@@ -17,8 +17,6 @@ public:
     void enableRawMode();
     void disableRawMode();
 
-    static std::pair<unsigned short, unsigned short> getWindowSize();
-
 private:
     struct termios m_terminal {};
 };
