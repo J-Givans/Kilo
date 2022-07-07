@@ -4,6 +4,7 @@
 #include "Terminal.hpp"
 #include "Keys.hpp"
 #include "Cursor.hpp"
+#include "Window.hpp"
 
 #include <sys/ioctl.h>
 
@@ -41,6 +42,7 @@ private:
     static constexpr std::string_view KILO_VERSION {"0.0.1"};
 
     Cursor cursor {};
+    Window m_window {};
 };
 
 

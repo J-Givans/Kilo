@@ -145,9 +145,9 @@ void Editor::refreshScreen() const
 /// A tilde is drawn at the beginning of any lines that come after the EOF being edited
 void Editor::drawRows(std::string& buffer) const
 {   
-    auto [rows, columns] = m_windowDimensions;
+    auto [rows, columns] = m_window.getWindowSize();
 
-    for (int y {}; y < rows; ++y) {
+    for (std::size_t y {}; y < rows; ++y) {
         if (y == rows / 3) {
             std::string welcome {"Kilo editor -- version "};
             welcome += KILO_VERSION;
@@ -175,7 +175,7 @@ void Editor::drawRows(std::string& buffer) const
     
         buffer += "\x1b[K";     // clear lines one at a time
 
-        if (y < m_windowDimensions.first - 1) {
+        if (y < rows - 1) {
             buffer += "\r\n";
         }
     }
