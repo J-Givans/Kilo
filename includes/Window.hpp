@@ -6,10 +6,10 @@
 
 class Window {
 public:
-    static std::pair<int, int> getWindowSize(Window const& window);
+    std::pair<std::size_t, std::size_t> getWindowSize() const;
 
 private:
-    static winsize m_window;
+    winsize m_window;
 };
 
 #endif
