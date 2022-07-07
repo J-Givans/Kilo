@@ -37,13 +37,7 @@ private:
 
 private:
     std::pair<unsigned short, unsigned short> m_windowDimensions;
-    
-    /// Horizontal coordinate (column) of the cursor
-    int cursorX {};
-
-    /// Vertical coordinate (row) of the cursor
-    int cursorY {};
-    
+        
     static constexpr std::string_view KILO_VERSION {"0.0.1"};
 
     Cursor cursor {};
