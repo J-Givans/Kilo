@@ -13,7 +13,7 @@
 
 class Editor : public Terminal {
 public:
-    Editor();
+    Editor() = default;
     ~Editor();
     
     /// Disable copy and move semantics
@@ -27,8 +27,6 @@ public:
     void processKeypress();
 
     void refreshScreen() const;
-
-    void init();
 
 private:
     void drawRows(std::string& buffer) const;

@@ -9,17 +9,6 @@
 #include <system_error>
 #include <utility>
 
-Editor::Editor()
-{
-    try {
-        init();       
-    }
-    catch (std::system_error const& err) {
-        std::cerr << err.code() << ": " << err.code().message() << '\n';
-        std::exit(EXIT_FAILURE);
-    }
-}
-
 /// Clear the screen and reposition the cursor on destruction 
 /// This handles both cases of program termination, that is, EXIT_SUCCESS and EXIT_FAILURE
 Editor::~Editor()
@@ -181,9 +170,4 @@ void Editor::drawRows(std::string& buffer) const
             buffer += "\r\n";
         }
     }
-}
-
-/// Set the Editor's window dimensions by calling Terminal::getWindowSize()
-void Editor::init()
-{
 }
