@@ -139,29 +139,42 @@ void Editor::drawRows(std::string& buffer) const
     auto [rows, columns] = m_window.getWindowSize();
 
     for (std::size_t y {}; y < rows; ++y) {
-        if (y == rows / 3) {
-            std::string welcome {"Kilo editor -- version "};
-            welcome += KILO_VERSION;
+        if (y >= m_numRows) {
+            if (y == rows / 3) {
+                std::string welcome {"Kilo editor -- version "};
+                welcome += KILO_VERSION;
 
-            if (welcome.size() > columns) {
-                welcome.resize(columns);
+                if (welcome.size() > columns) {
+                    welcome.resize(columns);
+                }
+
+                auto padding { (columns - welcome.length()) / 2 };
+
+                if (padding) {
+                    buffer += '~';
+                    --padding;
+                }
+
+                while (--padding) {
+                    buffer += " ";
+                }
+
+                buffer += welcome;
             }
-
-            auto padding { (columns - welcome.length()) / 2 };
-
-            if (padding) {
+            else {
                 buffer += '~';
-                --padding;
             }
-
-            while (--padding) {
-                buffer += " ";
-            }
-
-            buffer += welcome;
         }
         else {
-            buffer += '~';
+            auto tempstr { m_rowOfText };
+            auto len { tempstr.size() }; 
+
+            if (len > columns) {
+                len = columns;
+                tempstr.resize(len);
+            }
+
+            buffer += tempstr;
         }
     
         buffer += "\x1b[K";     // clear lines one at a time
@@ -170,4 +183,11 @@ void Editor::drawRows(std::string& buffer) const
             buffer += "\r\n";
         }
     }
+}
+
+void Editor::open()
+{
+    std::string_view line { "Hello, world!" };
+    m_rowOfText = std::move(line);
+    ++m_numRows;
 }

@@ -6,6 +6,7 @@
 #include "Cursor.hpp"
 #include "Window.hpp"
 
+#include <cstddef>
 #include <sys/ioctl.h>
 
 #include <utility>
@@ -28,6 +29,8 @@ public:
 
     void refreshScreen() const;
 
+    void open();
+
 private:
     void drawRows(std::string& buffer) const;
 
@@ -36,6 +39,9 @@ private:
 
     Cursor m_cursor {};
     Window m_window {};
+
+    std::size_t m_numRows {};
+    std::string m_rowOfText;
 };
 
 
