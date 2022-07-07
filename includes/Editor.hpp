@@ -33,9 +33,6 @@ public:
 private:
     void drawRows(std::string& buffer) const;
 
-    /// Move the cursor when a key is pressed
-    void moveCursor(int const& key);
-
 private:
     std::pair<unsigned short, unsigned short> m_windowDimensions;
         

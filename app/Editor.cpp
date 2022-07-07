@@ -111,13 +111,13 @@ void Editor::processKeypress()
             int iterations { m_windowDimensions.first };
 
             while (--iterations) {
-                moveCursor(c == PAGE_UP ? ARROW_UP : ARROW_DOWN);
+                cursor.moveCursor(c == PAGE_UP ? ARROW_UP : ARROW_DOWN, m_window);
             }
         }
         break;
 
     case ARROW_UP: case ARROW_DOWN: case ARROW_LEFT: case ARROW_RIGHT:
-        moveCursor(c);
+        cursor.moveCursor(c, m_window);
         break;
     }
 }
@@ -185,25 +185,4 @@ void Editor::drawRows(std::string& buffer) const
 void Editor::init()
 {
     m_windowDimensions = Terminal::getWindowSize();
-}
-
-void Editor::moveCursor(int const& key)
-{
-    switch (key) {
-    case ARROW_LEFT:
-        if (cursor.x != 0) { --cursor.x; }
-        break;
-
-    case ARROW_RIGHT:
-        if (cursor.x != m_windowDimensions.second - 1) { ++cursor.x; }
-        break;
-
-    case ARROW_UP:
-        if (cursor.y != 0) { --cursor.y; }
-        break;
-
-    case ARROW_DOWN:
-        if (cursor.y != m_windowDimensions.first - 1) { ++cursor.y; }
-        break;
-    }
 }
