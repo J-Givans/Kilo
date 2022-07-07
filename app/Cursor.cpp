@@ -4,7 +4,7 @@
 
 void Cursor::moveCursor(int const key, Window const& window)
 {
-    auto [row, col] = Window::getWindowSize(window);
+    auto [row, col] = window.getWindowSize();
     
     switch (key) {
     case ARROW_LEFT:
