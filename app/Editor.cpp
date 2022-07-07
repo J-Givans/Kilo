@@ -90,11 +90,11 @@ void Editor::processKeypress()
         break;
 
     case HOME:
-        cursor.x = 0;
+        m_cursor.x = 0;
         break;
 
     case END:
-        cursor.x = cols - 1;
+        m_cursor.x = cols - 1;
         break;
 
     case PAGE_UP: case PAGE_DOWN: 
@@ -102,13 +102,13 @@ void Editor::processKeypress()
             auto iterations { rows };
 
             while (--iterations) {
-                cursor.moveCursor(c == PAGE_UP ? ARROW_UP : ARROW_DOWN, m_window);
+                m_cursor.moveCursor(c == PAGE_UP ? ARROW_UP : ARROW_DOWN, m_window);
             }
         }
         break;
 
     case ARROW_UP: case ARROW_DOWN: case ARROW_LEFT: case ARROW_RIGHT:
-        cursor.moveCursor(c, m_window);
+        m_cursor.moveCursor(c, m_window);
         break;
     }
 }
@@ -123,7 +123,7 @@ void Editor::refreshScreen() const
     drawRows(strbuf);     // draw column of tildes
 
     char buffer[32];
-    std::snprintf(buffer, sizeof buffer, "\x1b[%d;%dH", cursor.y + 1, cursor.x + 1);
+    std::snprintf(buffer, sizeof buffer, "\x1b[%d;%dH", m_cursor.y + 1, m_cursor.x + 1);
     strbuf += buffer;
 
     strbuf += "\x1b[?25h";  // show the cursor immediately after repainting

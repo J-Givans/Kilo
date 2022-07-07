@@ -34,7 +34,7 @@ private:
 private:
     static constexpr std::string_view KILO_VERSION {"0.0.1"};
 
-    Cursor cursor {};
+    Cursor m_cursor {};
     Window m_window {};
 };
 
