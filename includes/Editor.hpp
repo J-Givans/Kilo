@@ -3,6 +3,7 @@
 
 #include "Terminal.hpp"
 #include "Keys.hpp"
+#include "Cursor.hpp"
 
 #include <sys/ioctl.h>
 
@@ -44,6 +45,8 @@ private:
     int cursorY {};
     
     static constexpr std::string_view KILO_VERSION {"0.0.1"};
+
+    Cursor cursor {};
 };
 
 

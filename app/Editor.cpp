@@ -99,11 +99,11 @@ void Editor::processKeypress()
         break;
 
     case HOME:
-        cursorX = 0;
+        cursor.x = 0;
         break;
 
     case END:
-        cursorX = m_windowDimensions.second - 1;
+        cursor.x = m_windowDimensions.second - 1;
         break;
 
     case PAGE_UP: case PAGE_DOWN: 
@@ -132,7 +132,7 @@ void Editor::refreshScreen() const
     drawRows(strbuf);     // draw column of tildes
 
     char buffer[32];
-    std::snprintf(buffer, sizeof buffer, "\x1b[%d;%dH", cursorY + 1, cursorX + 1);
+    std::snprintf(buffer, sizeof buffer, "\x1b[%d;%dH", cursor.y + 1, cursor.x + 1);
     strbuf += buffer;
 
     strbuf += "\x1b[?25h";  // show the cursor immediately after repainting
@@ -191,19 +191,19 @@ void Editor::moveCursor(int const& key)
 {
     switch (key) {
     case ARROW_LEFT:
-        if (cursorX != 0) { --cursorX; }
+        if (cursor.x != 0) { --cursor.x; }
         break;
 
     case ARROW_RIGHT:
-        if (cursorX != m_windowDimensions.second - 1) { ++cursorX; }
+        if (cursor.x != m_windowDimensions.second - 1) { ++cursor.x; }
         break;
 
     case ARROW_UP:
-        if (cursorY != 0) { --cursorY; }
+        if (cursor.y != 0) { --cursor.y; }
         break;
 
     case ARROW_DOWN:
-        if (cursorY != m_windowDimensions.first - 1) { ++cursorY; }
+        if (cursor.y != m_windowDimensions.first - 1) { ++cursor.y; }
         break;
     }
 }
