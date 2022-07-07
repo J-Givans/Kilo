@@ -4,8 +4,8 @@
 #include "Window.hpp"
 
 struct Cursor {
-    int x;
-    int y;
+    unsigned int x {};
+    unsigned int y {};
 
     void moveCursor(int const key, Window const& window);
 };
