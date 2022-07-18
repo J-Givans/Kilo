@@ -4,7 +4,7 @@
 #include "Cursor.hpp"
 #include "Keys.hpp"
 #include "Terminal.hpp"
-#include "Window.hpp"
+#include "posix/lib.hpp"
 
 #include <cstddef>
 #include <sys/ioctl.h>
@@ -39,7 +39,7 @@ private:
     static constexpr std::string_view KILO_VERSION { "0.0.1" };
 
     Cursor m_cursor {};
-    Window m_window {};
+    posix::winsize_t mWinsize {};
 
     std::size_t m_numRows {};
     std::string m_rowOfText;

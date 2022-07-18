@@ -102,7 +102,7 @@ int Editor::readKey()
 
 void Editor::processKeypress()
 {
-    auto [rows, cols] = m_window.getWindowSize();
+    auto [rows, cols] = mWinsize.getWindowSize();
 
     int c { readKey() };
 
@@ -124,7 +124,7 @@ void Editor::processKeypress()
         auto iterations { rows };
 
         while (--iterations) {
-            m_cursor.moveCursor(c == PAGE_UP ? ARROW_UP : ARROW_DOWN, m_window);
+            m_cursor.moveCursor(c == PAGE_UP ? ARROW_UP : ARROW_DOWN, mWinsize);
         }
     } break;
 
@@ -132,7 +132,7 @@ void Editor::processKeypress()
     case ARROW_DOWN:
     case ARROW_LEFT:
     case ARROW_RIGHT:
-        m_cursor.moveCursor(c, m_window);
+        m_cursor.moveCursor(c, mWinsize);
         break;
     }
 }
@@ -160,7 +160,7 @@ void Editor::refreshScreen() const
 /// A tilde is drawn at the beginning of any lines that come after the EOF being edited
 void Editor::drawRows(std::string& buffer) const
 {
-    auto [rows, columns] = m_window.getWindowSize();
+    auto [rows, columns] = mWinsize.getWindowSize();
 
     for (std::size_t y {}; y < rows; ++y) {
         if (y >= m_numRows) {
