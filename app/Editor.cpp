@@ -164,7 +164,8 @@ void Editor::drawRows(std::string& buffer) const
 
     for (std::size_t y {}; y < rows; ++y) {
         if (y >= mNumRows) {
-            if (y == rows / 3) {
+            // Display welcome message iff the user doesn't pass a file as an argument
+            if (mNumRows == 0 and y == rows / 3) {
                 std::string welcome { "Kilo editor -- version " };
                 welcome += KILO_VERSION;
 
@@ -216,10 +217,9 @@ void Editor::open(std::filesystem::path const& path)
     }
 
     std::string line {};
-    
-    while (file >> line) {
-        mRowOfText = std::move(line);
-    }
 
-    file.close();
+    while (file >> line) {
+        mRowOfText.append(line);
+        ++mNumRows;
+    }
 }
