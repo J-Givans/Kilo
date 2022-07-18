@@ -1,13 +1,13 @@
 #ifndef CURSOR_HPP
 #define CURSOR_HPP
 
-#include "Window.hpp"
+#include "posix/lib.hpp"
 
 struct Cursor {
     unsigned int x {};
     unsigned int y {};
 
-    void moveCursor(int const key, Window const& window);
+    void moveCursor(int const key, posix::winsize_t const& window);
 };
 
 

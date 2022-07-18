@@ -1,8 +1,10 @@
 #include "Cursor.hpp"
 #include "Keys.hpp"
-#include "Window.hpp"
+#include "posix/lib.hpp"
 
-void Cursor::moveCursor(int const key, Window const& window)
+using posix::winsize_t;
+
+void Cursor::moveCursor(int const key, winsize_t const& window)
 {
     auto [row, col] = window.getWindowSize();
     
