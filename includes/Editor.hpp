@@ -38,11 +38,11 @@ private:
 private:
     static constexpr std::string_view KILO_VERSION { "0.0.1" };
 
-    Cursor m_cursor {};
+    Cursor mCursor {};
     posix::winsize_t mWinsize {};
 
-    std::size_t m_numRows {};
-    std::string m_rowOfText;
+    std::size_t mNumRows {};
+    std::string mRowOfText;
 };
 
 #endif

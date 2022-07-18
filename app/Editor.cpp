@@ -112,11 +112,11 @@ void Editor::processKeypress()
         break;
 
     case HOME:
-        m_cursor.x = 0;
+        mCursor.x = 0;
         break;
 
     case END:
-        m_cursor.x = cols - 1;
+        mCursor.x = cols - 1;
         break;
 
     case PAGE_UP:
@@ -124,7 +124,7 @@ void Editor::processKeypress()
         auto iterations { rows };
 
         while (--iterations) {
-            m_cursor.moveCursor(c == PAGE_UP ? ARROW_UP : ARROW_DOWN, mWinsize);
+            mCursor.moveCursor(c == PAGE_UP ? ARROW_UP : ARROW_DOWN, mWinsize);
         }
     } break;
 
@@ -132,7 +132,7 @@ void Editor::processKeypress()
     case ARROW_DOWN:
     case ARROW_LEFT:
     case ARROW_RIGHT:
-        m_cursor.moveCursor(c, mWinsize);
+        mCursor.moveCursor(c, mWinsize);
         break;
     }
 }
@@ -147,7 +147,7 @@ void Editor::refreshScreen() const
     drawRows(strbuf); // draw column of tildes
 
     char buffer[32];
-    std::snprintf(buffer, sizeof buffer, "\x1b[%d;%dH", m_cursor.y + 1, m_cursor.x + 1);
+    std::snprintf(buffer, sizeof buffer, "\x1b[%d;%dH", mCursor.y + 1, mCursor.x + 1);
     strbuf += buffer;
 
     strbuf += "\x1b[?25h"; // show the cursor immediately after repainting
@@ -163,7 +163,7 @@ void Editor::drawRows(std::string& buffer) const
     auto [rows, columns] = mWinsize.getWindowSize();
 
     for (std::size_t y {}; y < rows; ++y) {
-        if (y >= m_numRows) {
+        if (y >= mNumRows) {
             if (y == rows / 3) {
                 std::string welcome { "Kilo editor -- version " };
                 welcome += KILO_VERSION;
@@ -188,7 +188,7 @@ void Editor::drawRows(std::string& buffer) const
                 buffer += '~';
             }
         } else {
-            auto tempstr { m_rowOfText };
+            auto tempstr { mRowOfText };
             auto len { tempstr.size() };
 
             if (len > columns) {
@@ -218,7 +218,7 @@ void Editor::open(std::filesystem::path const& path)
     std::string line {};
     
     while (file >> line) {
-        m_rowOfText = std::move(line);
+        mRowOfText = std::move(line);
     }
 
     file.close();
