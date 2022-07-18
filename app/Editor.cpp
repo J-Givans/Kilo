@@ -11,12 +11,12 @@
 
 /// Clear the screen and reposition the cursor on destruction 
 /// This handles both cases of program termination, that is, EXIT_SUCCESS and EXIT_FAILURE
+/// This way, if an error occurs in the middle of rendering the screen,
+/// no garbage is left over, and no errors are printed wherever the cursor happens to be
 Editor::~Editor()
 {
-    // This way, if an error occurs in the middle of rendering the screen,
-    // no garbage is left over, and no errors are printed wherever the cursor happens to be
-    posix::write(STDOUT_FILENO, "\x1b[2J", 4);  // clear the screen
-    posix::write(STDOUT_FILENO, "\x1b[H", 3);   // reposition the cursor to the top-left corner
+    std::cout.write("\x1b[2J", 4);  // clear the screen
+    std::cout.write("\x1b[H", 3);   // reposition the cursor to the top-left corner
 }
 
 int Editor::readKey()

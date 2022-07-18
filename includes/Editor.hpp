@@ -1,22 +1,22 @@
 #ifndef EDITOR_HPP
 #define EDITOR_HPP
 
-#include "Terminal.hpp"
-#include "Keys.hpp"
 #include "Cursor.hpp"
+#include "Keys.hpp"
+#include "Terminal.hpp"
 #include "Window.hpp"
 
 #include <cstddef>
 #include <sys/ioctl.h>
 
-#include <utility>
 #include <string>
+#include <utility>
 
 class Editor : public Terminal {
 public:
     Editor() = default;
     ~Editor();
-    
+
     /// Disable copy and move semantics
     Editor(Editor const&) = delete;
     Editor& operator=(Editor const&) = delete;
@@ -35,7 +35,7 @@ private:
     void drawRows(std::string& buffer) const;
 
 private:
-    static constexpr std::string_view KILO_VERSION {"0.0.1"};
+    static constexpr std::string_view KILO_VERSION { "0.0.1" };
 
     Cursor m_cursor {};
     Window m_window {};
@@ -43,6 +43,5 @@ private:
     std::size_t m_numRows {};
     std::string m_rowOfText;
 };
-
 
 #endif
