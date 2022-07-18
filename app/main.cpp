@@ -1,11 +1,22 @@
 #include "Editor.hpp"
 
 #include <cstdlib>
+#include <stdexcept>
+#include <iostream>
 
-int main()
+int main(int argc, char* argv[])
 {
     static Editor kilo {};
-    kilo.open();
+
+    if (argc >= 2) {
+        try {
+            kilo.open(argv[1]);
+        }
+        catch (std::runtime_error const& err) {
+            std::cerr << err.what() << '\n';
+            return EXIT_FAILURE;
+        }
+    }
 
     while (true) {
         kilo.refreshScreen();

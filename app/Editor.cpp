@@ -4,19 +4,23 @@
 #include <cstddef>
 #include <cstdio>
 #include <cstdlib>
+#include <filesystem>
+#include <fstream>
 #include <iostream>
+#include <stdexcept>
+#include <string>
 #include <string_view>
 #include <system_error>
 #include <utility>
 
-/// Clear the screen and reposition the cursor on destruction 
+/// Clear the screen and reposition the cursor on destruction
 /// This handles both cases of program termination, that is, EXIT_SUCCESS and EXIT_FAILURE
 /// This way, if an error occurs in the middle of rendering the screen,
 /// no garbage is left over, and no errors are printed wherever the cursor happens to be
 Editor::~Editor()
 {
-    std::cout.write("\x1b[2J", 4);  // clear the screen
-    std::cout.write("\x1b[H", 3);   // reposition the cursor to the top-left corner
+    std::cout.write("\x1b[2J", 4); // clear the screen
+    std::cout.write("\x1b[H", 3); // reposition the cursor to the top-left corner
 }
 
 int Editor::readKey()
@@ -34,46 +38,64 @@ int Editor::readKey()
     if (c == '\x1b') {
         char seq[3];
 
-        if (posix::read(STDIN_FILENO, &seq[0], 1) != 1) { return '\x1b'; }
-        if (posix::read(STDIN_FILENO, &seq[1], 1) != 1) { return '\x1b'; }
+        if (posix::read(STDIN_FILENO, &seq[0], 1) != 1) {
+            return '\x1b';
+        }
+        if (posix::read(STDIN_FILENO, &seq[1], 1) != 1) {
+            return '\x1b';
+        }
 
         if (seq[0] == '[') {
             if (seq[1] >= '0' && seq[1] <= '9') {
-                if (posix::read(STDIN_FILENO, &seq[2], 1) != 1) { return '\x1b'; }
+                if (posix::read(STDIN_FILENO, &seq[2], 1) != 1) {
+                    return '\x1b';
+                }
 
                 if (seq[2] == '~') {
                     switch (seq[1]) {
-                    case '1': return HOME;
-                    case '3': return DELETE;
-                    case '4': return END;
-                    case '5': return PAGE_UP;
-                    case '6': return PAGE_DOWN;
-                    case '7': return HOME;
-                    case '8': return END;
+                    case '1':
+                        return HOME;
+                    case '3':
+                        return DELETE;
+                    case '4':
+                        return END;
+                    case '5':
+                        return PAGE_UP;
+                    case '6':
+                        return PAGE_DOWN;
+                    case '7':
+                        return HOME;
+                    case '8':
+                        return END;
                     }
                 }
-            }
-            else {
+            } else {
                 switch (seq[1]) {
-                case 'A': return ARROW_UP;
-                case 'B': return ARROW_DOWN;
-                case 'C': return ARROW_RIGHT;
-                case 'D': return ARROW_LEFT;
-                case 'H': return HOME;
-                case 'F': return END;
+                case 'A':
+                    return ARROW_UP;
+                case 'B':
+                    return ARROW_DOWN;
+                case 'C':
+                    return ARROW_RIGHT;
+                case 'D':
+                    return ARROW_LEFT;
+                case 'H':
+                    return HOME;
+                case 'F':
+                    return END;
                 }
             }
-        }
-        else if (seq[0] == 'O') {
+        } else if (seq[0] == 'O') {
             switch (seq[1]) {
-            case 'H': return HOME;
-            case 'F': return END;
+            case 'H':
+                return HOME;
+            case 'F':
+                return END;
             }
         }
 
         return '\x1b';
-    }
-    else {
+    } else {
         return c;
     }
 }
@@ -82,7 +104,7 @@ void Editor::processKeypress()
 {
     auto [rows, cols] = m_window.getWindowSize();
 
-    int c {readKey()};
+    int c { readKey() };
 
     switch (c) {
     case ctrlKey('q'):
@@ -97,17 +119,19 @@ void Editor::processKeypress()
         m_cursor.x = cols - 1;
         break;
 
-    case PAGE_UP: case PAGE_DOWN: 
-        {
-            auto iterations { rows };
+    case PAGE_UP:
+    case PAGE_DOWN: {
+        auto iterations { rows };
 
-            while (--iterations) {
-                m_cursor.moveCursor(c == PAGE_UP ? ARROW_UP : ARROW_DOWN, m_window);
-            }
+        while (--iterations) {
+            m_cursor.moveCursor(c == PAGE_UP ? ARROW_UP : ARROW_DOWN, m_window);
         }
-        break;
+    } break;
 
-    case ARROW_UP: case ARROW_DOWN: case ARROW_LEFT: case ARROW_RIGHT:
+    case ARROW_UP:
+    case ARROW_DOWN:
+    case ARROW_LEFT:
+    case ARROW_RIGHT:
         m_cursor.moveCursor(c, m_window);
         break;
     }
@@ -117,31 +141,31 @@ void Editor::refreshScreen() const
 {
     std::string strbuf {};
 
-    strbuf += "\x1b[?25l";  // hide the cursor while repainting
-    strbuf += "\x1b[H";     // reposition the cursor to the top-left corner
+    strbuf += "\x1b[?25l"; // hide the cursor while repainting
+    strbuf += "\x1b[H"; // reposition the cursor to the top-left corner
 
-    drawRows(strbuf);     // draw column of tildes
+    drawRows(strbuf); // draw column of tildes
 
     char buffer[32];
     std::snprintf(buffer, sizeof buffer, "\x1b[%d;%dH", m_cursor.y + 1, m_cursor.x + 1);
     strbuf += buffer;
 
-    strbuf += "\x1b[?25h";  // show the cursor immediately after repainting
-    
+    strbuf += "\x1b[?25h"; // show the cursor immediately after repainting
+
     // Reposition the cursor to the top-left corner
     posix::write(STDOUT_FILENO, strbuf.c_str(), strbuf.size());
 }
 
-/// Draw a column of tildes on the left-hand side of the screen 
+/// Draw a column of tildes on the left-hand side of the screen
 /// A tilde is drawn at the beginning of any lines that come after the EOF being edited
 void Editor::drawRows(std::string& buffer) const
-{   
+{
     auto [rows, columns] = m_window.getWindowSize();
 
     for (std::size_t y {}; y < rows; ++y) {
         if (y >= m_numRows) {
             if (y == rows / 3) {
-                std::string welcome {"Kilo editor -- version "};
+                std::string welcome { "Kilo editor -- version " };
                 welcome += KILO_VERSION;
 
                 if (welcome.size() > columns) {
@@ -160,14 +184,12 @@ void Editor::drawRows(std::string& buffer) const
                 }
 
                 buffer += welcome;
-            }
-            else {
+            } else {
                 buffer += '~';
             }
-        }
-        else {
+        } else {
             auto tempstr { m_rowOfText };
-            auto len { tempstr.size() }; 
+            auto len { tempstr.size() };
 
             if (len > columns) {
                 len = columns;
@@ -176,8 +198,8 @@ void Editor::drawRows(std::string& buffer) const
 
             buffer += tempstr;
         }
-    
-        buffer += "\x1b[K";     // clear lines one at a time
+
+        buffer += "\x1b[K"; // clear lines one at a time
 
         if (y < rows - 1) {
             buffer += "\r\n";
@@ -185,9 +207,19 @@ void Editor::drawRows(std::string& buffer) const
     }
 }
 
-void Editor::open()
+void Editor::open(std::filesystem::path const& path)
 {
-    std::string_view line { "Hello, world!" };
-    m_rowOfText = std::move(line);
-    ++m_numRows;
+    std::ifstream file { path, std::ios::in };
+
+    if (!file) {
+        throw std::runtime_error { "Failed to open file" };
+    }
+
+    std::string line {};
+    
+    while (file >> line) {
+        m_rowOfText = std::move(line);
+    }
+
+    file.close();
 }

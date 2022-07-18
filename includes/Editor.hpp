@@ -11,6 +11,7 @@
 
 #include <string>
 #include <utility>
+#include <filesystem>
 
 class Editor : public Terminal {
 public:
@@ -29,7 +30,7 @@ public:
 
     void refreshScreen() const;
 
-    void open();
+    void open(std::filesystem::path const& path);
 
 private:
     void drawRows(std::string& buffer) const;
