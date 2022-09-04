@@ -23,6 +23,12 @@ Editor::~Editor()
     std::cout.write("\x1b[H", 3); // reposition the cursor to the top-left corner
 }
 
+Editor& Editor::instance()
+{
+    static Editor editor {};
+    return editor;
+}
+
 int Editor::readKey()
 {
     char c;

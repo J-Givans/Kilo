@@ -1,6 +1,5 @@
 #include "posix/lib.hpp"
 
-#include <asm-generic/errno-base.h>
 #include <cstddef>
 #include <system_error>
 #include <termios.h>

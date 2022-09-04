@@ -18,12 +18,14 @@ public:
     Editor() = default;
     ~Editor();
 
-    /// Disable copy and move semantics
+    // Disable copy and move semantics
     Editor(Editor const&) = delete;
     Editor& operator=(Editor const&) = delete;
 
+    static Editor& instance();
+
     /// Perform low-level keypress reading
-    static int readKey();
+    int readKey();
 
     /// Map keypresses to editor operations
     void processKeypress();
@@ -33,9 +35,6 @@ public:
     void open(std::filesystem::path const& path);
 
 private:
-    void drawRows(std::string& buffer) const;
-
-private:
     static constexpr std::string_view KILO_VERSION { "0.0.1" };
 
     Cursor mCursor {};
@@ -43,6 +42,8 @@ private:
 
     std::size_t mNumRows {};
     std::string mRowOfText;
+
+    void drawRows(std::string& buffer) const;
 };
 
 #endif

@@ -6,11 +6,9 @@
 
 int main(int argc, char* argv[])
 {
-    static Editor kilo {};
-
     if (argc >= 2) {
         try {
-            kilo.open(argv[1]);
+            Editor::instance().open(argv[1]);
         }
         catch (std::runtime_error const& err) {
             std::cerr << err.what() << '\n';
@@ -19,8 +17,8 @@ int main(int argc, char* argv[])
     }
 
     while (true) {
-        kilo.refreshScreen();
-        kilo.processKeypress();
+        Editor::instance().refreshScreen();
+        Editor::instance().processKeypress();
     }
 
     return EXIT_SUCCESS;
