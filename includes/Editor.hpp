@@ -36,7 +36,7 @@ public:
     void open(std::filesystem::path const& path);
 
 private:
-    static constexpr std::string_view KILO_VERSION { "0.0.1" };
+    std::string_view KILO_VERSION { "0.0.1" };
 
     Cursor mCursor {};
     posix::winsize_t mWinsize {};

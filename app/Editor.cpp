@@ -7,7 +7,6 @@
 #include <cstdlib>
 #include <filesystem>
 #include <fstream>
-#include <iostream>
 #include <iterator>
 #include <sstream>
 #include <stdexcept>
@@ -171,7 +170,7 @@ void Editor::drawRows(std::stringstream& buffer) const
 
     for (std::size_t y {}; y < rows; ++y) {
         if (y >= mNumRows) {
-            // Display welcome message iff the user doesn't pass a file as an argument
+            // Display welcome message iff the user doesn't open a file for reading on program start
             if (mNumRows == 0 and y == rows / 3) {
                 std::string welcome { "Kilo editor -- version " };
                 welcome += KILO_VERSION;
@@ -222,8 +221,7 @@ void Editor::open(std::filesystem::path const& path)
     std::ifstream file { path, std::ios::in };
 
     if (!file) {
-        std::cerr << "Unable to open file.\n";
-        std::exit(EXIT_FAILURE);
+        throw std::runtime_error {"Could not open file."};
     }
 
     ++mNumRows;
