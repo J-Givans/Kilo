@@ -1,16 +1,20 @@
 #include "Editor.hpp"
 #include "posix/lib.hpp"
 
+#include <algorithm>
 #include <cstddef>
 #include <cstdio>
 #include <cstdlib>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <iterator>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 #include <string_view>
 #include <system_error>
+#include <unistd.h>
 #include <utility>
 
 /// Clear the screen and reposition the cursor on destruction
@@ -19,8 +23,8 @@
 /// no garbage is left over, and no errors are printed wherever the cursor happens to be
 Editor::~Editor()
 {
-    std::cout.write("\x1b[2J", 4); // clear the screen
-    std::cout.write("\x1b[H", 3); // reposition the cursor to the top-left corner
+    posix::write(STDOUT_FILENO, "\x1b[2J", 4); // clear the screen
+    posix::write(STDOUT_FILENO, "\x1b[H", 3); // reposition the cursor to the top-left corner
 }
 
 Editor& Editor::instance()
@@ -145,26 +149,23 @@ void Editor::processKeypress()
 
 void Editor::refreshScreen() const
 {
-    std::string strbuf {};
+    std::stringstream strbuf{};
 
-    strbuf += "\x1b[?25l"; // hide the cursor while repainting
-    strbuf += "\x1b[H"; // reposition the cursor to the top-left corner
+    strbuf << "\x1b[?25l"; // hide the cursor while repainting
+    strbuf << "\x1b[H"; // reposition the cursor to the top-left corner
 
     drawRows(strbuf); // draw column of tildes
 
-    char buffer[32];
-    std::snprintf(buffer, sizeof buffer, "\x1b[%d;%dH", mCursor.y + 1, mCursor.x + 1);
-    strbuf += buffer;
-
-    strbuf += "\x1b[?25h"; // show the cursor immediately after repainting
+    strbuf << "\x1b[" << mCursor.y + 1 << ";" << mCursor.x + 1 << "H"; 
+    strbuf << "\x1b[?25h"; // show the cursor immediately after repainting
 
     // Reposition the cursor to the top-left corner
-    posix::write(STDOUT_FILENO, strbuf.c_str(), strbuf.size());
+    posix::write(STDOUT_FILENO, strbuf.str().c_str(), strbuf.str().size());
 }
 
 /// Draw a column of tildes on the left-hand side of the screen
 /// A tilde is drawn at the beginning of any lines that come after the EOF being edited
-void Editor::drawRows(std::string& buffer) const
+void Editor::drawRows(std::stringstream& buffer) const
 {
     auto [rows, columns] = mWinsize.getWindowSize();
 
@@ -182,19 +183,21 @@ void Editor::drawRows(std::string& buffer) const
                 auto padding { (columns - welcome.length()) / 2 };
 
                 if (padding) {
-                    buffer += '~';
+                    buffer << '~';
                     --padding;
                 }
 
                 while (--padding) {
-                    buffer += " ";
+                    buffer << " ";
                 }
 
-                buffer += welcome;
-            } else {
-                buffer += '~';
+                buffer << welcome;
+            } 
+            else {
+                buffer << '~';
             }
-        } else {
+        } 
+        else {
             auto tempstr { mRowOfText };
             auto len { tempstr.size() };
 
@@ -203,13 +206,13 @@ void Editor::drawRows(std::string& buffer) const
                 tempstr.resize(len);
             }
 
-            buffer += tempstr;
+            buffer << tempstr;
         }
 
-        buffer += "\x1b[K"; // clear lines one at a time
+        buffer << "\x1b[K"; // clear lines one at a time
 
         if (y < rows - 1) {
-            buffer += "\r\n";
+            buffer << "\r\n";
         }
     }
 }
@@ -219,13 +222,19 @@ void Editor::open(std::filesystem::path const& path)
     std::ifstream file { path, std::ios::in };
 
     if (!file) {
-        throw std::runtime_error { "Failed to open file" };
+        std::cerr << "Unable to open file.\n";
+        std::exit(EXIT_FAILURE);
     }
 
-    std::string line {};
+    ++mNumRows;
+    std::stringstream ss;
 
-    while (file >> line) {
-        mRowOfText.append(line);
-        ++mNumRows;
-    }
+    std::copy(
+        std::istreambuf_iterator<char>(file.rdbuf()),
+        std::istreambuf_iterator<char>(),
+        std::ostreambuf_iterator<char>(ss)
+    );
+
+    mRowOfText.clear();
+    mRowOfText = ss.str();
 }

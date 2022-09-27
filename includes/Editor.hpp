@@ -7,6 +7,7 @@
 #include "posix/lib.hpp"
 
 #include <cstddef>
+#include <sstream>
 #include <sys/ioctl.h>
 
 #include <string>
@@ -43,7 +44,7 @@ private:
     std::size_t mNumRows {};
     std::string mRowOfText;
 
-    void drawRows(std::string& buffer) const;
+    void drawRows(std::stringstream& buffer) const;
 };
 
 #endif
