@@ -13,16 +13,13 @@
 #include <string>
 #include <utility>
 #include <filesystem>
+#include <vector>
 
 class Editor : public Terminal 
 {
 public:
     Editor() = default;
     ~Editor();
-
-    // Disable copy and move semantics
-    Editor(Editor const&) = delete;
-    Editor& operator=(Editor const&) = delete;
 
     static Editor& instance();
 
@@ -32,19 +29,32 @@ public:
     /// Map keypresses to editor operations
     void processKeypress();
 
+    /// Print text to the screen
     void refreshScreen();
 
     void open(std::filesystem::path const& path);
 
 private:
+    /// The version of this application
     std::string_view KILO_VERSION{ "0.0.1" };
 
-    Cursor mCursor{};
-    posix::winsize_t mWinsize{};
+    /// The position of the cursor in the window
+    Cursor m_cursor{};
 
-    std::size_t mNumRows{};
-    std::string mRowOfText;
+    /// The size of the terminal window
+    posix::winsize_t m_winsize{};
 
+    /// The number of rows of text in the file
+    std::size_t m_numRows{};
+
+    /// Container to store the text read from the file passed during program initialisation
+    std::vector<std::string> m_rowsOfText{};
+
+    // Disable copy and move semantics
+    Editor(Editor const&) = delete;
+    Editor& operator=(Editor const&) = delete;
+
+    /// Draw a column of tildes on the left-hand side of the screen
     void drawRows(std::stringstream& buffer);
 };
 

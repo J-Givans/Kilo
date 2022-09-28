@@ -1,20 +1,12 @@
 #include "Editor.hpp"
 #include "posix/lib.hpp"
 
-#include <algorithm>
-#include <cstddef>
-#include <cstdio>
-#include <cstdlib>
 #include <filesystem>
 #include <fstream>
-#include <iterator>
-#include <sstream>
 #include <stdexcept>
-#include <string>
-#include <string_view>
 #include <system_error>
-#include <unistd.h>
-#include <utility>
+#include <string>
+#include <iostream>
 
 /// Clear the screen and reposition the cursor on destruction
 /// This handles both cases of program termination, that is, EXIT_SUCCESS and EXIT_FAILURE
@@ -22,20 +14,26 @@
 /// no garbage is left over, and no errors are printed wherever the cursor happens to be
 Editor::~Editor()
 {
-    posix::write(STDOUT_FILENO, "\x1b[2J", 4); // clear the screen
-    posix::write(STDOUT_FILENO, "\x1b[H", 3); // reposition the cursor to the top-left corner
+    try {
+        posix::write(STDOUT_FILENO, "\x1b[2J", 4); // clear the screen
+        posix::write(STDOUT_FILENO, "\x1b[H", 3); // reposition the cursor to the top-left corner
+    }
+    catch (std::system_error const& err) {
+        std::cerr << "Error while clearing the screen during program end.\n";
+        std::exit(EXIT_FAILURE);
+    }
 }
 
 Editor& Editor::instance()
 {
-    static Editor editor {};
+    static Editor editor{};
     return editor;
 }
 
 int Editor::readKey()
 {
-    char c;
-    std::size_t read;
+    char c{};
+    std::size_t read{};
 
     while ((read = posix::read(STDIN_FILENO, &c, 1)) != 1) {
     }
@@ -114,9 +112,9 @@ int Editor::readKey()
 
 void Editor::processKeypress()
 {
-    auto [rows, cols] = mWinsize.getWindowSize();
+    auto [rows, cols] = m_winsize.getWindowSize();
 
-    int c { readKey() };
+    int c = readKey();
 
     switch (c) {
     case ctrlKey('q'):
@@ -124,11 +122,11 @@ void Editor::processKeypress()
         break;
 
     case HOME:
-        mCursor.x = 0;
+        m_cursor.x = 0;
         break;
 
     case END:
-        mCursor.x = cols - 1;
+        m_cursor.x = cols - 1;
         break;
 
     case PAGE_UP:
@@ -136,7 +134,7 @@ void Editor::processKeypress()
         auto iterations { rows };
 
         while (--iterations) {
-            mCursor.moveCursor(c == PAGE_UP ? ARROW_UP : ARROW_DOWN, mWinsize);
+            m_cursor.moveCursor(c == PAGE_UP ? ARROW_UP : ARROW_DOWN, m_winsize);
         }
     } break;
 
@@ -144,7 +142,7 @@ void Editor::processKeypress()
     case ARROW_DOWN:
     case ARROW_LEFT:
     case ARROW_RIGHT:
-        mCursor.moveCursor(c, mWinsize);
+        m_cursor.moveCursor(c, m_winsize);
         break;
     }
 }
@@ -158,7 +156,7 @@ void Editor::refreshScreen()
 
     drawRows(buffer); // draw column of tildes
 
-    buffer << "\x1b[" << mCursor.y + 1 << ";" << mCursor.x + 1 << "H";  // move the cursor to position (y+1, x+1)
+    buffer << "\x1b[" << m_cursor.y + 1 << ";" << m_cursor.x + 1 << "H";  // move the cursor to position (y+1, x+1)
     buffer << "\x1b[?25h"; // show the cursor immediately after repainting
 
     // Reposition the cursor to the top-left corner
@@ -169,13 +167,13 @@ void Editor::refreshScreen()
 /// A tilde is drawn at the beginning of any lines that come after the EOF being edited
 void Editor::drawRows(std::stringstream& buffer)
 {
-    auto [rows, columns] = mWinsize.getWindowSize();
+    auto [rows, columns] = m_winsize.getWindowSize();
 
-    for (std::size_t y {}; y < rows; ++y) {
-        if (y >= mNumRows) {
+    for (std::size_t y{}; y < rows; ++y) {
+        if (y >= m_numRows) {
             // Display welcome message iff the user doesn't open a file for reading on program start
-            if (mNumRows == 0 and y == rows / 3) {
-                std::string welcome { "Kilo editor -- version " };
+            if (m_numRows == 0 and y == rows / 3) {
+                std::string welcome{"Kilo editor -- version "};
                 welcome += KILO_VERSION;
 
                 if (welcome.size() > columns) {
@@ -200,11 +198,18 @@ void Editor::drawRows(std::stringstream& buffer)
             }
         } 
         else {
-            if (mRowOfText.size() > columns) {
-                mRowOfText.resize(columns);
+            try {
+                if (m_rowsOfText.at(y).size() > columns) {
+                    m_rowsOfText.at(y).resize(columns);
+                }
+            }
+            catch (std::out_of_range const& err) {
+                std::cerr << "Error while printing to screen\n";
+                std::exit(EXIT_FAILURE);
             }
 
-            buffer << mRowOfText;
+            
+            buffer << m_rowsOfText.at(y);
         }
 
         buffer << "\x1b[K"; // clear lines one at a time
@@ -220,13 +225,13 @@ void Editor::open(std::filesystem::path const& path)
     std::ifstream inFile{ path};
 
     if (!inFile) {
-        throw std::runtime_error {"Could not open file."};
+        throw std::runtime_error{"Could not open file."};
     }
 
-    ++mNumRows;
     std::string text{};
 
-    std::getline(inFile, text);
-    mRowOfText.clear();
-    mRowOfText += text;
+    while (std::getline(inFile, text)) {
+        m_rowsOfText.push_back(text);
+        ++m_numRows;
+    }
 }
