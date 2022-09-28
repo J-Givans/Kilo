@@ -78,7 +78,8 @@ int Editor::readKey()
                         return END;
                     }
                 }
-            } else {
+            } 
+            else {
                 switch (seq[1]) {
                 case 'A':
                     return ARROW_UP;
@@ -94,7 +95,8 @@ int Editor::readKey()
                     return END;
                 }
             }
-        } else if (seq[0] == 'O') {
+        } 
+        else if (seq[0] == 'O') {
             switch (seq[1]) {
             case 'H':
                 return HOME;
@@ -104,7 +106,8 @@ int Editor::readKey()
         }
 
         return '\x1b';
-    } else {
+    } 
+    else {
         return c;
     }
 }
@@ -146,25 +149,25 @@ void Editor::processKeypress()
     }
 }
 
-void Editor::refreshScreen() const
+void Editor::refreshScreen()
 {
-    std::stringstream strbuf{};
+    std::stringstream buffer{};
 
-    strbuf << "\x1b[?25l"; // hide the cursor while repainting
-    strbuf << "\x1b[H"; // reposition the cursor to the top-left corner
+    buffer << "\x1b[?25l"; // hide the cursor while repainting
+    buffer << "\x1b[H"; // reposition the cursor to the top-left corner
 
-    drawRows(strbuf); // draw column of tildes
+    drawRows(buffer); // draw column of tildes
 
-    strbuf << "\x1b[" << mCursor.y + 1 << ";" << mCursor.x + 1 << "H"; 
-    strbuf << "\x1b[?25h"; // show the cursor immediately after repainting
+    buffer << "\x1b[" << mCursor.y + 1 << ";" << mCursor.x + 1 << "H";  // move the cursor to position (y+1, x+1)
+    buffer << "\x1b[?25h"; // show the cursor immediately after repainting
 
     // Reposition the cursor to the top-left corner
-    posix::write(STDOUT_FILENO, strbuf.str().c_str(), strbuf.str().size());
+    posix::write(STDOUT_FILENO, buffer.str().c_str(), buffer.str().size());
 }
 
 /// Draw a column of tildes on the left-hand side of the screen
 /// A tilde is drawn at the beginning of any lines that come after the EOF being edited
-void Editor::drawRows(std::stringstream& buffer) const
+void Editor::drawRows(std::stringstream& buffer)
 {
     auto [rows, columns] = mWinsize.getWindowSize();
 
@@ -197,15 +200,11 @@ void Editor::drawRows(std::stringstream& buffer) const
             }
         } 
         else {
-            auto tempstr { mRowOfText };
-            auto len { tempstr.size() };
-
-            if (len > columns) {
-                len = columns;
-                tempstr.resize(len);
+            if (mRowOfText.size() > columns) {
+                mRowOfText.resize(columns);
             }
 
-            buffer << tempstr;
+            buffer << mRowOfText;
         }
 
         buffer << "\x1b[K"; // clear lines one at a time
@@ -218,21 +217,16 @@ void Editor::drawRows(std::stringstream& buffer) const
 
 void Editor::open(std::filesystem::path const& path)
 {
-    std::ifstream file { path, std::ios::in };
+    std::ifstream inFile{ path};
 
-    if (!file) {
+    if (!inFile) {
         throw std::runtime_error {"Could not open file."};
     }
 
     ++mNumRows;
-    std::stringstream ss;
+    std::string text{};
 
-    std::copy(
-        std::istreambuf_iterator<char>(file.rdbuf()),
-        std::istreambuf_iterator<char>(),
-        std::ostreambuf_iterator<char>(ss)
-    );
-
+    std::getline(inFile, text);
     mRowOfText.clear();
-    mRowOfText = ss.str();
+    mRowOfText += text;
 }

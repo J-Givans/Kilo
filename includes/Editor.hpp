@@ -14,7 +14,8 @@
 #include <utility>
 #include <filesystem>
 
-class Editor : public Terminal {
+class Editor : public Terminal 
+{
 public:
     Editor() = default;
     ~Editor();
@@ -31,20 +32,20 @@ public:
     /// Map keypresses to editor operations
     void processKeypress();
 
-    void refreshScreen() const;
+    void refreshScreen();
 
     void open(std::filesystem::path const& path);
 
 private:
-    std::string_view KILO_VERSION { "0.0.1" };
+    std::string_view KILO_VERSION{ "0.0.1" };
 
-    Cursor mCursor {};
-    posix::winsize_t mWinsize {};
+    Cursor mCursor{};
+    posix::winsize_t mWinsize{};
 
-    std::size_t mNumRows {};
+    std::size_t mNumRows{};
     std::string mRowOfText;
 
-    void drawRows(std::stringstream& buffer) const;
+    void drawRows(std::stringstream& buffer);
 };
 
 #endif
