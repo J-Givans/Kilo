@@ -20,17 +20,17 @@ std::size_t write(int fd, void const* buffer, std::size_t count);
 
 class winsize_t {
 public:
-    std::pair<std::size_t, std::size_t> getWindowSize() const
+    std::pair<int, int> getWindowSize() const
     {
-        if (errno = 0; ::ioctl(STDOUT_FILENO, TIOCGWINSZ, &mWinsize) == -1) {
+        if (errno = 0; ::ioctl(STDOUT_FILENO, TIOCGWINSZ, &m_winsize) == -1) {
             throw std::system_error { errno, std::system_category() };
         }
 
-        return std::make_pair(mWinsize.ws_row, mWinsize.ws_col);
+        return std::make_pair(m_winsize.ws_row, m_winsize.ws_col);
     }
 
 private:
-    winsize mWinsize;
+    winsize m_winsize;
 };
 
 
