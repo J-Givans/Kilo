@@ -34,28 +34,7 @@ private:
         int yPos{};
 
         /// Move the cursor in the direction of the arrow key pressed
-        void moveCursor(int const key)
-        {
-            auto [row, col] = Editor::instance().m_winsize.getWindowSize();
-    
-            switch (key) {
-            case ARROW_LEFT:
-                if (xPos != 0) { --xPos; }
-                break;
-            
-            case ARROW_RIGHT:
-                if (xPos != col - 1) { ++xPos; }
-                break;
-
-            case ARROW_UP:
-                if (yPos != 0) { --yPos; }
-                break;
-
-            case ARROW_DOWN:
-                if (yPos != Editor::instance().m_numRows) { ++yPos; }
-                break;
-            }
-        }
+        void moveCursor(int const key);
     };
 
     /// The position of the cursor in the terminal window

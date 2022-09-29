@@ -8,6 +8,30 @@
 #include <string>
 #include <iostream>
 
+/// Move the cursor in the direction of the arrow key pressed
+void Editor::Cursor::moveCursor(int const key)
+{
+    auto [row, col] = Editor::instance().m_winsize.getWindowSize();
+    
+    switch (key) {
+    case ARROW_LEFT:
+        if (xPos != 0) { --xPos; }
+        break;
+    
+    case ARROW_RIGHT:
+        if (xPos != col - 1) { ++xPos; }
+        break;
+
+    case ARROW_UP:
+        if (yPos != 0) { --yPos; }
+        break;
+
+    case ARROW_DOWN:
+        if (yPos != Editor::instance().m_numRows) { ++yPos; }
+        break;
+    }
+}
+
 /// Clear the screen and reposition the cursor on destruction
 /// This handles both cases of program termination, that is, EXIT_SUCCESS and EXIT_FAILURE
 /// This way, if an error occurs in the middle of rendering the screen,
