@@ -13,6 +13,6 @@ target_include_directories(kilo PUBLIC ../includes)
 
 target_link_libraries(kilo PRIVATE libposix)
 
-target_compile_features(kilo PRIVATE cxx_std_17)
+target_compile_features(kilo PRIVATE cxx_std_20)
 
 target_compile_options(kilo PRIVATE -Wall -Wextra)
