@@ -52,7 +52,7 @@ private:
                 break;
 
             case ARROW_DOWN:
-                if (yPos != row - 1) { ++yPos; }
+                if (yPos != Editor::instance().m_numRows) { ++yPos; }
                 break;
             }
         }
