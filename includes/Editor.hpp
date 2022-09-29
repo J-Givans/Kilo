@@ -50,6 +50,10 @@ private:
     /// Container to store the text read from the file passed during program initialisation
     std::vector<std::string> m_rowsOfText{};
 
+    /// Keeps track of what row of the file the user is currently scrolled to
+    /// We are scrolled to the top of the file by default
+    int m_rowOffset{0};
+
     // Disable copy and move semantics
     Editor(Editor const&) = delete;
     Editor& operator=(Editor const&) = delete;
