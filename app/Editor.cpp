@@ -163,7 +163,7 @@ void Editor::refreshScreen()
 
     drawRows(buffer); // draw column of tildes
 
-    buffer << "\x1b[" << m_cursor.yPos + 1 << ";" << m_cursor.xPos + 1 << "H";  // move the cursor to position (y+1, x+1)
+    buffer << "\x1b[" << m_cursor.yPos - m_rowOffset << ";" << m_cursor.xPos + 1 << "H";  // move the cursor to position (y+1, x+1)
     buffer << "\x1b[?25h"; // show the cursor immediately after repainting
 
     // Reposition the cursor to the top-left corner
