@@ -24,12 +24,15 @@ Editor::~Editor()
     }
 }
 
+/// Create a static instance of the Editor class
+/// This is a Meyer's singleton
 Editor& Editor::instance()
 {
     static Editor editor{};
     return editor;
 }
 
+/// Perform low-level keypress handling
 int Editor::readKey()
 {
     char c{};
@@ -110,6 +113,7 @@ int Editor::readKey()
     }
 }
 
+/// Map keypresses to editor operations
 void Editor::processKeypress()
 {
     auto [rows, cols] = m_winsize.getWindowSize();
@@ -147,6 +151,7 @@ void Editor::processKeypress()
     }
 }
 
+/// Print text to the screen
 void Editor::refreshScreen()
 {
     std::stringstream buffer{};
@@ -219,6 +224,7 @@ void Editor::drawRows(std::stringstream& buffer)
     }
 }
 
+/// Open a file and read its contents
 void Editor::open(std::filesystem::path const& path)
 {
     std::ifstream inFile{ path};

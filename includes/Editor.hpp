@@ -21,16 +21,9 @@ public:
     ~Editor();
 
     static Editor& instance();
-
-    /// Perform low-level keypress reading
     int readKey();
-
-    /// Map keypresses to editor operations
     void processKeypress();
-
-    /// Print text to the screen
     void refreshScreen();
-
     void open(std::filesystem::path const& path);
 
 private:
@@ -88,7 +81,6 @@ private:
     Editor(Editor const&) = delete;
     Editor& operator=(Editor const&) = delete;
 
-    /// Draw a column of tildes on the left-hand side of the screen
     void drawRows(std::stringstream& buffer);
 };
 
