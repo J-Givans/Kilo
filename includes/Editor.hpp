@@ -35,11 +35,43 @@ public:
     void open(std::filesystem::path const& path);
 
 private:
+    /// Data type representing the position of the cursor in the terminal window
+    struct Cursor
+    {
+        int xPos{};
+        int yPos{};
+
+        /// Move the cursor in the direction of the arrow key pressed
+        void moveCursor(int const key, posix::winsize_t const& window)
+        {
+            auto [row, col] = window.getWindowSize();
+    
+            switch (key) {
+            case ARROW_LEFT:
+                if (xPos != 0) { --xPos; }
+                break;
+            
+            case ARROW_RIGHT:
+                if (xPos != col - 1) { ++xPos; }
+                break;
+
+            case ARROW_UP:
+                if (yPos != 0) { --yPos; }
+                break;
+
+            case ARROW_DOWN:
+                if (yPos != row - 1) { ++yPos; }
+                break;
+            }
+
+        }
+    };
+
+    /// The position of the cursor in the terminal window
+    Cursor m_cursor{};
+
     /// The version of this application
     std::string_view KILO_VERSION{ "0.0.1" };
-
-    /// The position of the cursor in the window
-    Cursor m_cursor{};
 
     /// The size of the terminal window
     posix::winsize_t m_winsize{};

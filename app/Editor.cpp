@@ -122,11 +122,11 @@ void Editor::processKeypress()
         break;
 
     case HOME:
-        m_cursor.x = 0;
+        m_cursor.xPos = 0;
         break;
 
     case END:
-        m_cursor.x = cols - 1;
+        m_cursor.xPos = cols - 1;
         break;
 
     case PAGE_UP:
@@ -156,7 +156,7 @@ void Editor::refreshScreen()
 
     drawRows(buffer); // draw column of tildes
 
-    buffer << "\x1b[" << m_cursor.y + 1 << ";" << m_cursor.x + 1 << "H";  // move the cursor to position (y+1, x+1)
+    buffer << "\x1b[" << m_cursor.yPos + 1 << ";" << m_cursor.xPos + 1 << "H";  // move the cursor to position (y+1, x+1)
     buffer << "\x1b[?25h"; // show the cursor immediately after repainting
 
     // Reposition the cursor to the top-left corner
