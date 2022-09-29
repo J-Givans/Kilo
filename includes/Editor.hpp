@@ -1,7 +1,6 @@
 #ifndef EDITOR_HPP
 #define EDITOR_HPP
 
-#include "Cursor.hpp"
 #include "Keys.hpp"
 #include "Terminal.hpp"
 #include "posix/lib.hpp"
@@ -63,7 +62,6 @@ private:
                 if (yPos != row - 1) { ++yPos; }
                 break;
             }
-
         }
     };
 
