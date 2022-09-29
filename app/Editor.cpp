@@ -170,7 +170,7 @@ void Editor::drawRows(std::stringstream& buffer)
     auto [rows, columns] = m_winsize.getWindowSize();
 
     for (std::size_t y{}; y < rows; ++y) {
-        if (y >= m_numRows) {
+        if (auto fileRow = y + m_rowOffset; fileRow >= m_numRows) {
             // Display welcome message iff the user doesn't open a file for reading on program start
             if (m_numRows == 0 and y == rows / 3) {
                 std::string welcome{"Kilo editor -- version "};
@@ -196,20 +196,19 @@ void Editor::drawRows(std::stringstream& buffer)
             else {
                 buffer << '~';
             }
-        } 
+        }
         else {
             try {
-                if (m_rowsOfText.at(y).size() > columns) {
-                    m_rowsOfText.at(y).resize(columns);
+                if (m_rowsOfText.at(fileRow).size() > columns) {
+                    m_rowsOfText.at(fileRow).resize(columns);
                 }
             }
             catch (std::out_of_range const& err) {
                 std::cerr << "Error while printing to screen\n";
                 std::exit(EXIT_FAILURE);
             }
-
             
-            buffer << m_rowsOfText.at(y);
+            buffer << m_rowsOfText.at(fileRow);
         }
 
         buffer << "\x1b[K"; // clear lines one at a time
