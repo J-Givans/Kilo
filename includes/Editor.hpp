@@ -5,12 +5,7 @@
 #include "Terminal.hpp"
 #include "posix/lib.hpp"
 
-#include <cstddef>
-#include <sstream>
-#include <sys/ioctl.h>
-
 #include <string>
-#include <utility>
 #include <filesystem>
 #include <vector>
 
