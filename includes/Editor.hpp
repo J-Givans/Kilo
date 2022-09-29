@@ -45,7 +45,7 @@ private:
     posix::winsize_t m_winsize{};
 
     /// The number of rows of text in the file
-    std::size_t m_numRows{};
+    int m_numRows{};
 
     /// Container to store the text read from the file passed during program initialisation
     std::vector<std::string> m_rowsOfText{};
