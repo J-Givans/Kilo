@@ -82,6 +82,7 @@ private:
     Editor& operator=(Editor const&) = delete;
 
     void drawRows(std::stringstream& buffer);
+    void scroll();
 };
 
 #endif

@@ -154,6 +154,8 @@ void Editor::processKeypress()
 /// Print text to the screen
 void Editor::refreshScreen()
 {
+    scroll();
+
     std::stringstream buffer{};
 
     buffer << "\x1b[?25l"; // hide the cursor while repainting
@@ -238,5 +240,18 @@ void Editor::open(std::filesystem::path const& path)
     while (std::getline(inFile, text)) {
         m_rowsOfText.push_back(text);
         ++m_numRows;
+    }
+}
+
+/// Check if the cursor has moved outside the visible window
+/// If so, adjust m_rowOffset so that the cursor is just inside the visible window
+void Editor::scroll()
+{
+    if (m_cursor.yPos < m_rowOffset) {
+        m_rowOffset = m_cursor.yPos;
+    }
+
+    if (auto screenRows = m_winsize.getWindowSize().first; m_cursor.yPos >= m_rowOffset + screenRows) {
+        m_rowOffset = m_cursor.yPos - screenRows + 1;
     }
 }
