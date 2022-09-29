@@ -138,7 +138,7 @@ void Editor::processKeypress()
         auto iterations { rows };
 
         while (--iterations) {
-            m_cursor.moveCursor(c == PAGE_UP ? ARROW_UP : ARROW_DOWN, m_winsize);
+            m_cursor.moveCursor(c == PAGE_UP ? ARROW_UP : ARROW_DOWN);
         }
     } break;
 
@@ -146,7 +146,7 @@ void Editor::processKeypress()
     case ARROW_DOWN:
     case ARROW_LEFT:
     case ARROW_RIGHT:
-        m_cursor.moveCursor(c, m_winsize);
+        m_cursor.moveCursor(c);
         break;
     }
 }

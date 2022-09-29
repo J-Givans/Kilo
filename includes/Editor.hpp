@@ -34,9 +34,9 @@ private:
         int yPos{};
 
         /// Move the cursor in the direction of the arrow key pressed
-        void moveCursor(int const key, posix::winsize_t const& window)
+        void moveCursor(int const key)
         {
-            auto [row, col] = window.getWindowSize();
+            auto [row, col] = Editor::instance().m_winsize.getWindowSize();
     
             switch (key) {
             case ARROW_LEFT:
