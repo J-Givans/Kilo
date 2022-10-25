@@ -229,17 +229,11 @@ void Editor::drawRows(std::stringstream& buffer)
             }
         }
         else {
-            try {
-                if (std::ssize(m_rowsOfText.at(fileRow)) > columns) {
-                    m_rowsOfText.at(fileRow).resize(columns);
-                }
-            }
-            catch (std::out_of_range const& err) {
-                std::cerr << "Error while printing to screen\n";
-                std::exit(EXIT_FAILURE);
+            if (std::ssize(m_rowsOfText[fileRow]) > columns) {
+                m_rowsOfText[fileRow].resize(columns);
             }
             
-            buffer << m_rowsOfText.at(fileRow);
+            buffer << m_rowsOfText[fileRow];
         }
 
         buffer << "\x1b[K"; // clear lines one at a time
