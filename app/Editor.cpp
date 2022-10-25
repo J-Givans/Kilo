@@ -1,6 +1,7 @@
 #include "Editor.hpp"
 #include "posix/lib.hpp"
 
+#include <cstddef>
 #include <filesystem>
 #include <fstream>
 #include <stdexcept>
@@ -29,8 +30,14 @@ void Editor::Cursor::moveCursor(int const key)
         break;
 
     case ARROW_DOWN:
-        if (yPos != Editor::instance().m_numRows) { yPos++; }
+        if  (yPos != Editor::instance().m_numRows) { yPos++; }
         break;
+    }
+
+    row = (yPos >= Editor::instance().m_numRows) ? nullptr : &Editor::instance().m_rowsOfText[yPos];
+
+    if (int rowLen = row ? std::ssize(*row) : 0; xPos > rowLen) {
+        xPos = rowLen;
     }
 }
 
