@@ -11,13 +11,17 @@
 /// Move the cursor in the direction of the arrow key pressed
 void Editor::Cursor::moveCursor(int const key)
 {   
+    std::string* row = (yPos >= Editor::instance().m_numRows) ? nullptr : &Editor::instance().m_rowsOfText[yPos];
+
     switch (key) {
     case ARROW_LEFT:
         if (xPos != 0) { xPos--; }
         break;
     
     case ARROW_RIGHT:
-        xPos++;
+        if (row and xPos < std::ssize(*row)) {
+            xPos++;
+        }
         break;
 
     case ARROW_UP:
