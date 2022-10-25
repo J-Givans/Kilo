@@ -16,7 +16,14 @@ void Editor::Cursor::moveCursor(int const key)
 
     switch (key) {
     case ARROW_LEFT:
-        if (xPos != 0) { xPos--; }
+        if (xPos != 0) { 
+            xPos--; 
+        }
+        else if (yPos > 0) {
+            yPos--;
+            xPos = std::ssize(Editor::instance().m_rowsOfText[yPos]);
+        }
+        
         break;
     
     case ARROW_RIGHT:
@@ -30,7 +37,7 @@ void Editor::Cursor::moveCursor(int const key)
         break;
 
     case ARROW_DOWN:
-        if  (yPos != Editor::instance().m_numRows) { yPos++; }
+        if (yPos != Editor::instance().m_numRows) { yPos++; }
         break;
     }
 
