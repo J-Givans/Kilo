@@ -30,6 +30,11 @@ void Editor::Cursor::moveCursor(int const key)
         if (row and xPos < std::ssize(*row)) {
             xPos++;
         }
+        else if (row and xPos == std::ssize(*row)) {
+            yPos++;
+            xPos = 0;
+        }
+
         break;
 
     case ARROW_UP:
