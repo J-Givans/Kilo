@@ -51,6 +51,9 @@ private:
     /// We are scrolled to the top of the file by default
     int m_rowOffset{0};
 
+    /// Keeps track of the column the user is currently scrolled to
+    int m_colOff{0};
+
     // Disable copy and move semantics
     Editor(Editor const&) = delete;
     Editor& operator=(Editor const&) = delete;

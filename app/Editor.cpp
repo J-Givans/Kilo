@@ -10,24 +10,22 @@
 
 /// Move the cursor in the direction of the arrow key pressed
 void Editor::Cursor::moveCursor(int const key)
-{
-    auto [row, col] = Editor::instance().m_winsize.getWindowSize();
-    
+{   
     switch (key) {
     case ARROW_LEFT:
-        if (xPos != 0) { --xPos; }
+        if (xPos != 0) { xPos--; }
         break;
     
     case ARROW_RIGHT:
-        if (xPos != col - 1) { ++xPos; }
+        xPos++;
         break;
 
     case ARROW_UP:
-        if (yPos != 0) { --yPos; }
+        if (yPos != 0) { yPos--; }
         break;
 
     case ARROW_DOWN:
-        if (yPos != Editor::instance().m_numRows) { ++yPos; }
+        if (yPos != Editor::instance().m_numRows) { yPos++; }
         break;
     }
 }
@@ -187,7 +185,7 @@ void Editor::refreshScreen()
 
     drawRows(buffer); // draw column of tildes
 
-    buffer << "\x1b[" << m_cursor.yPos - m_rowOffset << ";" << m_cursor.xPos + 1 << "H";  // move the cursor to position (y+1, x+1)
+    buffer << "\x1b[" << (m_cursor.yPos - m_rowOffset) + 1 << ";" << (m_cursor.xPos - m_colOff) + 1 << "H";  // move the cursor to position (y+1, x+1)
     buffer << "\x1b[?25h"; // show the cursor immediately after repainting
 
     // Reposition the cursor to the top-left corner
@@ -229,10 +227,15 @@ void Editor::drawRows(std::stringstream& buffer)
             }
         }
         else {
-            if (std::ssize(m_rowsOfText[fileRow]) > columns) {
+            auto strlen = std::ssize(m_rowsOfText[fileRow]) - m_colOff;
+
+            if (strlen < 0) {
+                m_rowsOfText[fileRow].resize(0);
+            }
+            else if (strlen > columns) {
                 m_rowsOfText[fileRow].resize(columns);
             }
-            
+
             buffer << m_rowsOfText[fileRow];
         }
 
@@ -265,11 +268,21 @@ void Editor::open(std::filesystem::path const& path)
 /// If so, adjust m_rowOffset so that the cursor is just inside the visible window
 void Editor::scroll()
 {
+    auto [screenRows, screenCols] = m_winsize.getWindowSize();
+
     if (m_cursor.yPos < m_rowOffset) {
         m_rowOffset = m_cursor.yPos;
     }
 
-    if (auto screenRows = m_winsize.getWindowSize().first; m_cursor.yPos >= m_rowOffset + screenRows) {
+    if (m_cursor.yPos >= m_rowOffset + screenRows) {
         m_rowOffset = m_cursor.yPos - screenRows + 1;
+    }
+
+    if (m_cursor.xPos < m_colOff) {
+        m_colOff = m_cursor.xPos;
+    }
+
+    if (m_cursor.xPos >= m_colOff + screenCols) {
+        m_colOff = m_cursor.xPos - screenCols + 1;
     }
 }
