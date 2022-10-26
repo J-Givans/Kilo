@@ -176,7 +176,10 @@ void Editor::processKeypress()
         break;
 
     case END:
-        m_cursor.xPos = cols - 1;
+        if (m_cursor.yPos < m_numRows) {
+            m_cursor.xPos = std::ssize(m_rowsOfText[m_cursor.yPos]);
+        }
+
         break;
 
     case PAGE_UP:
