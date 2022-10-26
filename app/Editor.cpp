@@ -208,7 +208,7 @@ void Editor::refreshScreen()
 
     drawRows(buffer); // draw column of tildes
 
-    buffer << "\x1b[" << (m_cursor.yPos - m_rowOffset) + 1 << ";" << (m_cursor.xPos - m_colOff) + 1 << "H";  // move the cursor to position (y+1, x+1)
+    buffer << "\x1b[" << (m_cursor.yPos - m_offset.row) + 1 << ";" << (m_cursor.xPos - m_offset.col) + 1 << "H";  // move the cursor to position (y+1, x+1)
     buffer << "\x1b[?25h"; // show the cursor immediately after repainting
 
     // Reposition the cursor to the top-left corner
@@ -222,7 +222,7 @@ void Editor::drawRows(std::stringstream& buffer)
     auto [rows, columns] = m_winsize.getWindowSize();
 
     for (int y{0}; y < rows; ++y) {
-        if (auto fileRow = y + m_rowOffset; fileRow >= m_numRows) {
+        if (auto fileRow = y + m_offset.row; fileRow >= m_numRows) {
             // Display welcome message iff the user doesn't open a file for reading on program start
             if (m_numRows == 0 and y == rows / 3) {
                 std::string welcome{"Kilo editor -- version "};
@@ -250,7 +250,7 @@ void Editor::drawRows(std::stringstream& buffer)
             }
         }
         else {
-            auto strlen = std::ssize(m_rowsOfText[fileRow]) - m_colOff;
+            auto strlen = std::ssize(m_rowsOfText[fileRow]) - m_offset.col;
 
             if (strlen < 0) {
                 m_rowsOfText[fileRow].resize(0);
@@ -288,24 +288,24 @@ void Editor::open(std::filesystem::path const& path)
 }
 
 /// Check if the cursor has moved outside the visible window
-/// If so, adjust m_rowOffset so that the cursor is just inside the visible window
+/// If so, adjust m_offset.row so that the cursor is just inside the visible window
 void Editor::scroll()
 {
     auto [screenRows, screenCols] = m_winsize.getWindowSize();
 
-    if (m_cursor.yPos < m_rowOffset) {
-        m_rowOffset = m_cursor.yPos;
+    if (m_cursor.yPos < m_offset.row) {
+        m_offset.row = m_cursor.yPos;
     }
 
-    if (m_cursor.yPos >= m_rowOffset + screenRows) {
-        m_rowOffset = m_cursor.yPos - screenRows + 1;
+    if (m_cursor.yPos >= m_offset.row + screenRows) {
+        m_offset.row = m_cursor.yPos - screenRows + 1;
     }
 
-    if (m_cursor.xPos < m_colOff) {
-        m_colOff = m_cursor.xPos;
+    if (m_cursor.xPos < m_offset.col) {
+        m_offset.col = m_cursor.xPos;
     }
 
-    if (m_cursor.xPos >= m_colOff + screenCols) {
-        m_colOff = m_cursor.xPos - screenCols + 1;
+    if (m_cursor.xPos >= m_offset.col + screenCols) {
+        m_offset.col = m_cursor.xPos - screenCols + 1;
     }
 }

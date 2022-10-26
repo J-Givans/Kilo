@@ -9,6 +9,14 @@
 #include <filesystem>
 #include <vector>
 
+/// Keeps track of the cursor position the user is currently scrolled to
+/// Default is (0,0) - the top of the file
+struct Offset
+{
+    int row{};
+    int col{};
+};
+
 class Editor : public Terminal 
 {
 public:
@@ -46,13 +54,8 @@ private:
 
     /// Container to store the text read from the file passed during program initialisation
     std::vector<std::string> m_rowsOfText{};
-
-    /// Keeps track of what row of the file the user is currently scrolled to
-    /// We are scrolled to the top of the file by default
-    int m_rowOffset{0};
-
-    /// Keeps track of the column the user is currently scrolled to
-    int m_colOff{0};
+    
+    Offset m_offset{};
 
     // Disable copy and move semantics
     Editor(Editor const&) = delete;
