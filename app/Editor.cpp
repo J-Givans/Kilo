@@ -1,4 +1,5 @@
 #include "Editor.hpp"
+#include "Keys.hpp"
 #include "posix/lib.hpp"
 
 #include <cstddef>
@@ -180,6 +181,17 @@ void Editor::processKeypress()
 
     case PAGE_UP:
     case PAGE_DOWN: {
+        if (c == PAGE_UP) {
+            m_cursor.yPos = m_offset.row;
+        }
+        else if (c == PAGE_DOWN) {
+            m_cursor.yPos = m_offset.row + rows - 1;
+
+            if (m_cursor.yPos > m_numRows) {
+                m_cursor.yPos = m_numRows;
+            }
+        }
+
         auto iterations { rows };
 
         while (--iterations) {
