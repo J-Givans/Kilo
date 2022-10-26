@@ -13,7 +13,7 @@
 /// Move the cursor in the direction of the arrow key pressed
 void Editor::Cursor::moveCursor(int const key)
 {   
-    std::string* row = (yPos >= Editor::instance().m_numRows) ? nullptr : &Editor::instance().m_rowsOfText[yPos];
+    std::string* row = (yPos >= Editor::instance().m_numRows) ? nullptr : &Editor::instance().m_text[yPos];
 
     switch (key) {
     case ARROW_LEFT:
@@ -22,7 +22,7 @@ void Editor::Cursor::moveCursor(int const key)
         }
         else if (yPos > 0) {
             yPos--;
-            xPos = std::ssize(Editor::instance().m_rowsOfText[yPos]);
+            xPos = std::ssize(Editor::instance().m_text[yPos]);
         }
         
         break;
@@ -47,7 +47,7 @@ void Editor::Cursor::moveCursor(int const key)
         break;
     }
 
-    row = (yPos >= Editor::instance().m_numRows) ? nullptr : &Editor::instance().m_rowsOfText[yPos];
+    row = (yPos >= Editor::instance().m_numRows) ? nullptr : &Editor::instance().m_text[yPos];
 
     if (int rowLen = row ? std::ssize(*row) : 0; xPos > rowLen) {
         xPos = rowLen;
@@ -177,7 +177,7 @@ void Editor::processKeypress()
 
     case END:
         if (m_cursor.yPos < m_numRows) {
-            m_cursor.xPos = std::ssize(m_rowsOfText[m_cursor.yPos]);
+            m_cursor.xPos = std::ssize(m_text[m_cursor.yPos]);
         }
 
         break;
@@ -265,16 +265,16 @@ void Editor::drawRows(std::stringstream& buffer)
             }
         }
         else {
-            auto strlen = std::ssize(m_rowsOfText[fileRow]) - m_offset.col;
+            auto strlen = std::ssize(m_text[fileRow]) - m_offset.col;
 
             if (strlen < 0) {
-                m_rowsOfText[fileRow].resize(0);
+                m_text[fileRow].resize(0);
             }
             else if (strlen > columns) {
-                m_rowsOfText[fileRow].resize(columns);
+                m_text[fileRow].resize(columns);
             }
 
-            buffer << m_rowsOfText[fileRow];
+            buffer << m_text[fileRow];
         }
 
         buffer << "\x1b[K"; // clear lines one at a time
@@ -297,7 +297,7 @@ void Editor::open(std::filesystem::path const& path)
     std::string text{};
 
     while (std::getline(inFile, text)) {
-        m_rowsOfText.push_back(text);
+        m_text.push_back(text);
         ++m_numRows;
     }
 }

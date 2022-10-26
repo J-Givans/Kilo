@@ -53,7 +53,7 @@ private:
     int m_numRows{};
 
     /// Container to store the text read from the file passed during program initialisation
-    std::vector<std::string> m_rowsOfText{};
+    std::vector<std::string> m_text{};
     
     Offset m_offset{};
 
