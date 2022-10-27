@@ -162,8 +162,6 @@ int Editor::readKey()
 /// Map keypresses to editor operations
 void Editor::processKeypress()
 {
-    auto [rows, cols] = m_winsize.getWindowSize();
-
     int c = readKey();
 
     switch (c) {
@@ -183,24 +181,26 @@ void Editor::processKeypress()
         break;
 
     case PAGE_UP:
-    case PAGE_DOWN: {
+    case PAGE_DOWN: 
+    {
         if (c == PAGE_UP) {
             m_cursor.yPos = m_offset.row;
         }
         else if (c == PAGE_DOWN) {
-            m_cursor.yPos = m_offset.row + rows - 1;
+            m_cursor.yPos = m_offset.row + m_winsize.row - 1;
 
             if (m_cursor.yPos > m_numRows) {
                 m_cursor.yPos = m_numRows;
             }
         }
 
-        auto iterations { rows };
+        auto iterations { m_winsize.row };
 
         while (--iterations) {
             m_cursor.moveCursor(c == PAGE_UP ? ARROW_UP : ARROW_DOWN);
         }
-    } break;
+    } 
+    break;
 
     case ARROW_UP:
     case ARROW_DOWN:
@@ -234,20 +234,18 @@ void Editor::refreshScreen()
 /// A tilde is drawn at the beginning of any lines that come after the EOF being edited
 void Editor::drawRows(std::stringstream& buffer)
 {
-    auto [rows, columns] = m_winsize.getWindowSize();
-
-    for (int y{0}; y < rows; ++y) {
+    for (int y{0}; y < m_winsize.row; ++y) {
         if (auto fileRow = y + m_offset.row; fileRow >= m_numRows) {
             // Display welcome message iff the user doesn't open a file for reading on program start
-            if (m_numRows == 0 and y == rows / 3) {
+            if (m_numRows == 0 and y == m_winsize.row / 3) {
                 std::string welcome{"Kilo editor -- version "};
                 welcome += KILO_VERSION;
 
-                if (std::ssize(welcome) > columns) {
-                    welcome.resize(columns);
+                if (std::ssize(welcome) > m_winsize.col) {
+                    welcome.resize(m_winsize.col);
                 }
 
-                auto padding { (columns - welcome.length()) / 2 };
+                auto padding { (m_winsize.col - welcome.length()) / 2 };
 
                 if (padding) {
                     buffer << '~';
@@ -270,8 +268,8 @@ void Editor::drawRows(std::stringstream& buffer)
             if (strlen < 0) {
                 m_text[fileRow].resize(0);
             }
-            else if (strlen > columns) {
-                m_text[fileRow].resize(columns);
+            else if (strlen > m_winsize.col) {
+                m_text[fileRow].resize(m_winsize.col);
             }
 
             buffer << m_text[fileRow];
@@ -279,7 +277,7 @@ void Editor::drawRows(std::stringstream& buffer)
 
         buffer << "\x1b[K"; // clear lines one at a time
 
-        if (y < rows - 1) {
+        if (y < m_winsize.row - 1) {
             buffer << "\r\n";
         }
     }
@@ -306,21 +304,19 @@ void Editor::open(std::filesystem::path const& path)
 /// If so, adjust m_offset.row so that the cursor is just inside the visible window
 void Editor::scroll()
 {
-    auto [screenRows, screenCols] = m_winsize.getWindowSize();
-
     if (m_cursor.yPos < m_offset.row) {
         m_offset.row = m_cursor.yPos;
     }
 
-    if (m_cursor.yPos >= m_offset.row + screenRows) {
-        m_offset.row = m_cursor.yPos - screenRows + 1;
+    if (m_cursor.yPos >= m_offset.row + m_winsize.row) {
+        m_offset.row = m_cursor.yPos - m_winsize.row + 1;
     }
 
     if (m_cursor.xPos < m_offset.col) {
         m_offset.col = m_cursor.xPos;
     }
 
-    if (m_cursor.xPos >= m_offset.col + screenCols) {
-        m_offset.col = m_cursor.xPos - screenCols + 1;
+    if (m_cursor.xPos >= m_offset.col + m_winsize.col) {
+        m_offset.col = m_cursor.xPos - m_winsize.col + 1;
     }
 }
