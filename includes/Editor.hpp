@@ -5,6 +5,7 @@
 #include "Terminal.hpp"
 #include "posix/lib.hpp"
 
+#include <sstream>
 #include <string>
 #include <filesystem>
 #include <vector>
@@ -65,6 +66,7 @@ private:
     int readKey();
     void drawRows(std::stringstream& buffer);
     void scroll();
+    void drawStatusBar(std::stringstream& buffer);
 };
 
 #endif

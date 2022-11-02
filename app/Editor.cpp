@@ -5,6 +5,7 @@
 #include <cstddef>
 #include <filesystem>
 #include <fstream>
+#include <sstream>
 #include <stdexcept>
 #include <system_error>
 #include <string>
@@ -228,6 +229,7 @@ void Editor::refreshScreen()
     buffer << "\x1b[H"; // reposition the cursor to the top-left corner
 
     drawRows(buffer); // draw column of tildes
+    drawStatusBar(buffer);  // draw a blank white status bar of inverted space characters
 
     buffer << "\x1b[" << (m_cursor.yPos - m_offset.row) + 1 << ";" << (m_cursor.xPos - m_offset.col) + 1 << "H";  // move the cursor to position (y+1, x+1)
     buffer << "\x1b[?25h"; // show the cursor immediately after repainting
@@ -322,4 +324,17 @@ void Editor::scroll()
     if (m_cursor.xPos >= m_offset.col + m_winsize.col) {
         m_offset.col = m_cursor.xPos - m_winsize.col + 1;
     }
+}
+
+void Editor::drawStatusBar(std::stringstream& buffer)
+{
+    buffer << "\x1b[7m";    // switch to inverted colours (black text; white bg)
+    int len{0};
+
+    while (len < m_winsize.col) {
+        buffer << ' ';
+        ++len;
+    }
+
+    buffer << "\x1b[m";     // switch to normal formatting (white text; black bg)
 }
