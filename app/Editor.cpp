@@ -57,6 +57,7 @@ void Editor::Cursor::moveCursor(int const key)
 Editor::Editor()
 :   m_cursor{}, m_winsize{}, m_numRows{}, m_text{}, m_offset{}
 {
+    m_winsize.row -= 1;
 }
 
 /// Clear the screen and reposition the cursor on destruction
@@ -281,10 +282,7 @@ void Editor::drawRows(std::stringstream& buffer)
         }
 
         buffer << "\x1b[K"; // clear lines one at a time
-
-        if (y < m_winsize.row - 1) {
-            buffer << "\r\n";
-        }
+        buffer << "\r\n";
     }
 }
 
