@@ -20,11 +20,9 @@ struct Offset
 class Editor : public Terminal 
 {
 public:
-    Editor() = default;
-    ~Editor();
+    Editor();
 
     static Editor& instance();
-    int readKey();
     void processKeypress();
     void refreshScreen();
     void open(std::filesystem::path const& path);
@@ -41,26 +39,30 @@ private:
     };
 
     /// The position of the cursor in the terminal window
-    Cursor m_cursor{};
+    Cursor m_cursor;
 
     /// The version of this application
     std::string_view KILO_VERSION{ "0.0.1" };
 
     /// The size of the terminal window
-    posix::winsize_t m_winsize{};
+    posix::winsize_t m_winsize;
 
     /// The number of rows of text in the file
-    int m_numRows{};
+    int m_numRows;
 
     /// Container to store the text read from the file passed during program initialisation
-    std::vector<std::string> m_text{};
+    std::vector<std::string> m_text;
     
-    Offset m_offset{};
+    Offset m_offset;
+
+private:
+    ~Editor();
 
     // Disable copy and move semantics
     Editor(Editor const&) = delete;
     Editor& operator=(Editor const&) = delete;
 
+    int readKey();
     void drawRows(std::stringstream& buffer);
     void scroll();
 };

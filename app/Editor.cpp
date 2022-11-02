@@ -54,6 +54,11 @@ void Editor::Cursor::moveCursor(int const key)
     }
 }
 
+Editor::Editor()
+:   m_cursor{}, m_winsize{}, m_numRows{}, m_text{}, m_offset{}
+{
+}
+
 /// Clear the screen and reposition the cursor on destruction
 /// This handles both cases of program termination, that is, EXIT_SUCCESS and EXIT_FAILURE
 /// This way, if an error occurs in the middle of rendering the screen,
