@@ -56,7 +56,7 @@ void Editor::Cursor::moveCursor(int const key)
 }
 
 Editor::Editor()
-:   m_cursor{}, m_winsize{}, m_numRows{}, m_text{}, m_offset{}
+:   m_cursor{}, m_winsize{}, m_numRows{}, m_text{}, m_offset{}, m_filename{}
 {
     m_winsize.row -= 1;
 }
@@ -291,6 +291,7 @@ void Editor::drawRows(std::stringstream& buffer)
 /// Open a file and read its contents
 void Editor::open(std::filesystem::path const& path)
 {
+    m_filename = path.c_str();
     std::ifstream inFile{ path};
 
     if (!inFile) {

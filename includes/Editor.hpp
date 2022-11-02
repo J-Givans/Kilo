@@ -8,6 +8,7 @@
 #include <sstream>
 #include <string>
 #include <filesystem>
+#include <string_view>
 #include <vector>
 
 /// Keeps track of the cursor position the user is currently scrolled to
@@ -55,6 +56,7 @@ private:
     std::vector<std::string> m_text;
     
     Offset m_offset;
+    std::string_view m_filename;     /// The name of the file currently opened by the editor
 
 private:
     ~Editor();
