@@ -2,13 +2,14 @@
 
 #include <cstdlib>
 #include <stdexcept>
-#include <iostream>
 
 int main(int argc, char* argv[])
 {
+    Editor& editor = Editor::instance();
+
     if (argc >= 2) {
         try {
-            Editor::instance().open(argv[1]);
+            editor.open(argv[1]);
         }
         catch (std::runtime_error const& err) {
             std::cerr << err.what() << '\n';
@@ -17,8 +18,8 @@ int main(int argc, char* argv[])
     }
 
     while (true) {
-        Editor::instance().refreshScreen();
-        Editor::instance().processKeypress();
+        editor.refreshScreen();
+        editor.processKeypress();
     }
 
     return EXIT_SUCCESS;
