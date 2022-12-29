@@ -1,15 +1,15 @@
 #ifndef LIB_HPP
 #define LIB_HPP
 
-#include <asm-generic/ioctls.h>
-#include <cstddef>
-#include <cstdlib>
-#include <iostream>
 #include <sys/ioctl.h>
 #include <termios.h>
 #include <unistd.h>
 
 #include <cerrno>
+#include <cstddef>
+#include <cstdlib>
+
+#include <iostream>
 #include <system_error>
 #include <utility>
 
