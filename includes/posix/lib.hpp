@@ -42,7 +42,7 @@ namespace posix
         }
         catch (std::system_error const& e) 
         {
-            std::cerr << e.code() << ": " << e.what() << '\n';
+            std::cerr << e.code() << ": " << e.code().message() << '\n';
             std::exit(EXIT_FAILURE);
         }
 
