@@ -51,10 +51,7 @@ namespace posix
 
         std::pair<int, int> getWindowSize() const
         {
-            if (errno = 0; ::ioctl(STDOUT_FILENO, TIOCGWINSZ, &m_winsize) == -1) {
-                throw std::system_error {{errno, std::system_category()}, "Could not get dimensions of terminal window"};
-            }
-
+            posix::ioctl(STDOUT_FILENO, TIOCGWINSZ, &m_winsize);
             return std::make_pair(m_winsize.ws_row, m_winsize.ws_col);
         }
     };
