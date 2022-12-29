@@ -21,6 +21,16 @@ namespace posix
     std::size_t read(int fd, void* buffer, std::size_t count);
     std::size_t write(int fd, void const* buffer, std::size_t count);
 
+    template <typename... Args> void ioctl(int fd, unsigned long request, Args&&... args)
+    {
+        errno = 0;
+        auto ret = ::ioctl(fd, request, std::forward<Args>(args)...);
+
+        if (ret == -1) {
+            throw std::system_error(errno, std::system_category());
+        }
+    }
+
     class winsize_t 
     {
     public:
