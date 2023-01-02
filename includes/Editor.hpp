@@ -23,6 +23,9 @@ class Editor : public Terminal
 {
 public:
     Editor();
+    ~Editor();
+    Editor(Editor const&) = delete;
+    Editor& operator=(Editor const&) = delete;
 
     static Editor& instance();
     void processKeypress();
@@ -49,12 +52,6 @@ private:
     std::string_view m_filename;     /// The name of the file currently opened by the editor
 
 private:
-    ~Editor();
-
-    // Disable copy and move semantics
-    Editor(Editor const&) = delete;
-    Editor& operator=(Editor const&) = delete;
-
     int readKey();
     void drawRows(std::stringstream& buffer);
     void scroll();
