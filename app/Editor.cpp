@@ -1,6 +1,7 @@
 #include "Editor.hpp"
 #include "Keys.hpp"
 #include "posix/lib.hpp"
+#include "Utils.hpp"
 
 #include <cstddef>
 #include <filesystem>
@@ -10,6 +11,7 @@
 #include <system_error>
 #include <string>
 #include <iostream>
+#include <optional>
 
 /// Move the cursor in the direction of the arrow key pressed
 void Editor::Cursor::moveCursor(int const key)
@@ -83,87 +85,6 @@ Editor& Editor::instance()
 {
     static Editor editor{};
     return editor;
-}
-
-/// Perform low-level keypress handling
-int Editor::readKey()
-{
-    char c{};
-    std::size_t read{};
-
-    while ((read = posix::read(STDIN_FILENO, &c, 1)) != 1) {
-    }
-
-    // If we read an escape character, immediately read 2 more bytes into seq
-    // If either of these reads times out, assume the user pressed ESC and return that
-    // Otherwise, look to see if the escape sequence if an arrow key sequence
-    // If it is, return the corresponding w a s d character, else return ESC
-    if (c == '\x1b') {
-        char seq[3];
-
-        if (posix::read(STDIN_FILENO, &seq[0], 1) != 1) {
-            return '\x1b';
-        }
-        if (posix::read(STDIN_FILENO, &seq[1], 1) != 1) {
-            return '\x1b';
-        }
-
-        if (seq[0] == '[') {
-            if (seq[1] >= '0' && seq[1] <= '9') {
-                if (posix::read(STDIN_FILENO, &seq[2], 1) != 1) {
-                    return '\x1b';
-                }
-
-                if (seq[2] == '~') {
-                    switch (seq[1]) {
-                    case '1':
-                        return HOME;
-                    case '3':
-                        return DELETE;
-                    case '4':
-                        return END;
-                    case '5':
-                        return PAGE_UP;
-                    case '6':
-                        return PAGE_DOWN;
-                    case '7':
-                        return HOME;
-                    case '8':
-                        return END;
-                    }
-                }
-            } 
-            else {
-                switch (seq[1]) {
-                case 'A':
-                    return ARROW_UP;
-                case 'B':
-                    return ARROW_DOWN;
-                case 'C':
-                    return ARROW_RIGHT;
-                case 'D':
-                    return ARROW_LEFT;
-                case 'H':
-                    return HOME;
-                case 'F':
-                    return END;
-                }
-            }
-        } 
-        else if (seq[0] == 'O') {
-            switch (seq[1]) {
-            case 'H':
-                return HOME;
-            case 'F':
-                return END;
-            }
-        }
-
-        return '\x1b';
-    } 
-    else {
-        return c;
-    }
 }
 
 /// Map keypresses to editor operations
