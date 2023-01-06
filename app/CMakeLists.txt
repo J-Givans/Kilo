@@ -1,5 +1,8 @@
 add_executable(kilo)
 
+include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+conan_basic_setup()
+
 target_sources(kilo
     PUBLIC 
         main.cpp Terminal.cpp 
