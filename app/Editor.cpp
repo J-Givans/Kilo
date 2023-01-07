@@ -295,7 +295,7 @@ void Editor::drawStatusBar(std::string& buffer) const
     buffer += "\x1b[7m";    // switch to inverted colours (black text, white background)
     
     std::string status = fmt::sprintf("%.20s - %d lines", m_filename.empty() ? "[No Name]" : m_filename, m_numRows);
-    int len = std::ssize(status);
+    auto len = std::ssize(status);
 
     if (len > m_winsize.col) {
         len = m_winsize.col;
