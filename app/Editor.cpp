@@ -13,6 +13,9 @@
 #include <iostream>
 #include <optional>
 
+#include <fmt/core.h>
+#include <fmt/printf.h>
+
 /**
  * @brief Moves the cursor in the direction of the arrow-key pressed
  * @param key One of the four possible arrow-keys
@@ -86,7 +89,7 @@ Editor::~Editor()
         posix::write(STDOUT_FILENO, "\x1b[H", 3); // reposition the cursor to the top-left corner
     }
     catch (std::system_error const& err) {
-        std::cerr << "Error while clearing the screen during program end.\n";
+        fmt::fprintf(stderr, "Error while clearing the screen during program exit.\n");
         std::exit(EXIT_FAILURE);
     }
 }
