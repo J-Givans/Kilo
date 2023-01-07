@@ -52,9 +52,9 @@ private:
     std::string_view m_filename;     /// The name of the file currently opened by the editor
 
 private:
-    void drawRows(std::stringstream& buffer);
+    void drawRows(std::string& buffer);
     void scroll();
-    void drawStatusBar(std::stringstream& buffer);
+    void drawStatusBar(std::string& buffer);
 };
 
 #endif
