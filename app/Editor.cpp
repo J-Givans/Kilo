@@ -72,10 +72,13 @@ Editor::Editor()
     m_winsize.row -= 1;
 }
 
-/// Clear the screen and reposition the cursor on destruction
-/// This handles both cases of program termination, that is, EXIT_SUCCESS and EXIT_FAILURE
-/// This way, if an error occurs in the middle of rendering the screen,
-/// no garbage is left over, and no errors are printed wherever the cursor happens to be
+/**
+ * @brief Clear the screen and reposition the cursor to the top-left corner on program exit.
+ *
+ * Handles both normal and abnormal program termination.
+ * If an error occurs in the middle of rendering the screen, no garbage is left over, and no errors are printed
+ * wherever the cursor happens to be.
+*/
 Editor::~Editor()
 {
     try {
@@ -88,15 +91,19 @@ Editor::~Editor()
     }
 }
 
-/// Create a static instance of the Editor class
-/// This is a Meyer's singleton
+/**
+ * @brief Creates a static instance of an Editor
+ * @return A reference to a static Editor
+*/
 Editor& Editor::instance()
 {
     static Editor editor{};
     return editor;
 }
 
-/// Map keypresses to editor operations
+/** 
+ * @brief Maps keypresses to editor operations 
+*/
 void Editor::processKeypress()
 {
     int c = readKey();
@@ -148,7 +155,9 @@ void Editor::processKeypress()
     }
 }
 
-/// Print text to the screen
+/**
+ * @brief Handles the painting of TUI elements to the screen.
+*/
 void Editor::refreshScreen()
 {
     scroll();
@@ -168,9 +177,12 @@ void Editor::refreshScreen()
     posix::write(STDOUT_FILENO, buffer.str().c_str(), buffer.str().size());
 }
 
-/// Draw a column of tildes on the left-hand side of the screen
-/// A tilde is drawn at the beginning of any lines that come after the EOF being edited
-void Editor::drawRows(std::stringstream& buffer)
+/**
+ * @brief Draw a column of tildes on the left-hand side of the screen
+ *
+ * Displays the welcome message if the user doesn't open a file
+ * A tilde is drawn at the beginning of any lines that come after the EOF being edited
+*/
 {
     for (int y{0}; y < m_winsize.row; ++y) {
         if (auto fileRow = y + m_offset.row; fileRow >= m_numRows) {
@@ -218,7 +230,15 @@ void Editor::drawRows(std::stringstream& buffer)
     }
 }
 
-/// Open a file and read its contents
+/**
+ * @brief Open a file and read its contents
+ * @param path A path to the file to be opened.
+ *
+ * Attempts to open a file for input. Throws a @c std::runtime_error exception on failure
+ * Sets the @c m_filename member to the name of the opened file
+ * Writes the contents of the file to a vector of strings
+ * Increments @c m_numRows to match the number of rows in the opened file
+*/
 void Editor::open(std::filesystem::path const& path)
 {
     m_filename = path.c_str();
@@ -236,8 +256,12 @@ void Editor::open(std::filesystem::path const& path)
     }
 }
 
-/// Check if the cursor has moved outside the visible window
-/// If so, adjust m_offset.row so that the cursor is just inside the visible window
+/**
+ * @brief Determine the position of the cursor within the visible window
+ *
+ * Checks if the cursor is still within the visible window. 
+ * If not, it adjusts @c m_offset.row to reposition it within the visible window
+*/
 void Editor::scroll()
 {
     if (m_cursor.yPos < m_offset.row) {
@@ -257,7 +281,10 @@ void Editor::scroll()
     }
 }
 
-void Editor::drawStatusBar(std::stringstream& buffer)
+/**
+ * @brief Draws a status bar at the bottom of the editor window
+ * @param buffer The string to which the contents of the status bar are written
+*/
 {
     buffer << "\x1b[7m";    // switch to inverted colours (black text; white bg)
     int len{0};
