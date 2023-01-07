@@ -53,7 +53,7 @@ private:
 private:
     void drawRows(std::string& buffer);
     void scroll();
-    void drawStatusBar(std::string& buffer);
+    void drawStatusBar(std::string& buffer) const;
 };
 
 #endif

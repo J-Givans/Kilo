@@ -290,7 +290,7 @@ void Editor::scroll()
  * @brief Draws a status bar at the bottom of the editor window
  * @param buffer The string to which the contents of the status bar are written
 */
-void Editor::drawStatusBar(std::string& buffer)
+void Editor::drawStatusBar(std::string& buffer) const
 {
     buffer += "\x1b[7m";    // switch to inverted colours (black text, white background)
     
