@@ -13,7 +13,10 @@
 #include <iostream>
 #include <optional>
 
-/// Move the cursor in the direction of the arrow key pressed
+/**
+ * @brief Moves the cursor in the direction of the arrow-key pressed
+ * @param key One of the four possible arrow-keys
+*/
 void Editor::Cursor::moveCursor(int const key)
 {   
     std::string* row = (yPos >= Editor::instance().m_numRows) ? nullptr : &Editor::instance().m_text[yPos];
