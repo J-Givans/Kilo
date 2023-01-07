@@ -163,19 +163,22 @@ void Editor::refreshScreen()
 {
     scroll();
 
-    std::stringstream buffer{};
+    std::string buffer;
+    buffer += "\x1b[?25l";  // hide the cursor while repainting
+    buffer += "\x1b[H";     // reposition the cursor to the top-left corner
 
-    buffer << "\x1b[?25l"; // hide the cursor while repainting
-    buffer << "\x1b[H"; // reposition the cursor to the top-left corner
-
-    drawRows(buffer); // draw column of tildes
+    drawRows(buffer);       // draw column of tildes
     drawStatusBar(buffer);  // draw a blank white status bar of inverted space characters
 
-    buffer << "\x1b[" << (m_cursor.yPos - m_offset.row) + 1 << ";" << (m_cursor.xPos - m_offset.col) + 1 << "H";  // move the cursor to position (y+1, x+1)
-    buffer << "\x1b[?25h"; // show the cursor immediately after repainting
+    // Move the cursor to position (y + 1, x + 1)
+    std::string str = fmt::format("\x1b[{};{}H", (m_cursor.yPos - m_offset.row) + 1, (m_cursor.xPos - m_offset.col) + 1);
+    buffer += str;
+    
+    // Show the cursor immediately after repainting
+    buffer += "\x1b[?25h";
 
     // Reposition the cursor to the top-left corner
-    posix::write(STDOUT_FILENO, buffer.str().c_str(), buffer.str().size());
+    posix::write(STDOUT_FILENO, buffer.c_str(), buffer.length());
 }
 
 /**
@@ -184,50 +187,51 @@ void Editor::refreshScreen()
  * Displays the welcome message if the user doesn't open a file
  * A tilde is drawn at the beginning of any lines that come after the EOF being edited
 */
+void Editor::drawRows(std::string& buffer)
 {
-    for (int y{0}; y < m_winsize.row; ++y) {
-        if (auto fileRow = y + m_offset.row; fileRow >= m_numRows) {
-            // Display welcome message iff the user doesn't open a file for reading on program start
+    for (int y = 0; y < m_winsize.row; ++y) {
+        if (int filerow = y + m_offset.row; filerow >= m_numRows) {
+            
+            // Display the welcome msg if the user doesn't open a file
             if (m_numRows == 0 and y == m_winsize.row / 3) {
-                std::string welcome{"Kilo editor -- version "};
-                welcome += KILO_VERSION;
+                std::string welcome = fmt::format("Kilo Editor --version {}", KILO_VERSION);
 
                 if (std::ssize(welcome) > m_winsize.col) {
                     welcome.resize(m_winsize.col);
                 }
 
-                auto padding { (m_winsize.col - welcome.length()) / 2 };
+                auto padding = (m_winsize.col - welcome.length()) / 2;
 
                 if (padding) {
-                    buffer << '~';
+                    buffer += "~";
                     --padding;
                 }
 
                 while (--padding) {
-                    buffer << " ";
+                    buffer += " ";
                 }
 
-                buffer << welcome;
-            } 
+                buffer += welcome;
+            }
             else {
-                buffer << '~';
+                buffer += "~";
             }
         }
         else {
-            auto strlen = std::ssize(m_text[fileRow]) - m_offset.col;
+            auto strlen = std::ssize(m_text[filerow]) - m_offset.col;
 
             if (strlen < 0) {
-                m_text[fileRow].resize(0);
+                m_text[filerow].resize(0);
             }
             else if (strlen > m_winsize.col) {
-                m_text[fileRow].resize(m_winsize.col);
+                m_text[filerow].resize(m_winsize.col);
             }
 
-            buffer << m_text[fileRow];
+            buffer += m_text[filerow];
         }
 
-        buffer << "\x1b[K"; // clear lines one at a time
-        buffer << "\r\n";
+        buffer += "\x1b[K"; // clear lines one at a time
+        buffer += "\r\n";
     }
 }
 
@@ -286,14 +290,23 @@ void Editor::scroll()
  * @brief Draws a status bar at the bottom of the editor window
  * @param buffer The string to which the contents of the status bar are written
 */
+void Editor::drawStatusBar(std::string& buffer)
 {
-    buffer << "\x1b[7m";    // switch to inverted colours (black text; white bg)
-    int len{0};
+    buffer += "\x1b[7m";    // switch to inverted colours (black text, white background)
+    
+    std::string status = fmt::sprintf("%.20s - %d lines", m_filename.empty() ? "[No Name]" : m_filename, m_numRows);
+    int len = std::ssize(status);
+
+    if (len > m_winsize.col) {
+        len = m_winsize.col;
+    }
+
+    buffer += status;
 
     while (len < m_winsize.col) {
-        buffer << ' ';
+        buffer += " ";
         ++len;
     }
 
-    buffer << "\x1b[m";     // switch to normal formatting (white text; black bg)
+    buffer += "\x1b[m";     // switch to normal formatting (white text; black background)
 }
