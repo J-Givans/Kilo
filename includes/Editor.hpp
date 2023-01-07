@@ -5,7 +5,6 @@
 #include "Terminal.hpp"
 #include "posix/lib.hpp"
 
-#include <sstream>
 #include <string>
 #include <filesystem>
 #include <string_view>
