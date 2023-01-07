@@ -60,6 +60,12 @@ void Editor::Cursor::moveCursor(int const key)
     }
 }
 
+/**
+ * @brief Default constructor.
+ *
+ * Creates a default instance of an Editor.
+ * Decrements @c m_winsize.row by 1 to create room for the status bar at the bottom of the Editor window.
+*/
 Editor::Editor()
 :   m_cursor{}, m_winsize{}, m_numRows{}, m_text{}, m_offset{}, m_filename{}
 {
