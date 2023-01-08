@@ -20,7 +20,8 @@
 */
 void Editor::Cursor::moveCursor(int const key)
 {   
-    std::string const* row = (yPos >= Editor::instance().m_numRows) ? nullptr : &Editor::instance().m_text[yPos];
+    auto const& editor = Editor::instance();
+    std::string const* row = (yPos >= editor.m_numRows) ? nullptr : &editor.m_text[yPos];
 
     switch (key) {
     case ARROW_LEFT:
@@ -29,7 +30,7 @@ void Editor::Cursor::moveCursor(int const key)
         }
         else if (yPos > 0) {
             yPos--;
-            xPos = std::ssize(Editor::instance().m_text[yPos]);
+            xPos = std::ssize(editor.m_text[yPos]);
         }
         
         break;
@@ -50,14 +51,14 @@ void Editor::Cursor::moveCursor(int const key)
         break;
 
     case ARROW_DOWN:
-        if (yPos != Editor::instance().m_numRows) { yPos++; }
+        if (yPos != editor.m_numRows) { yPos++; }
         break;
 
     default:
         break;
     }
 
-    row = (yPos >= Editor::instance().m_numRows) ? nullptr : &Editor::instance().m_text[yPos];
+    row = (yPos >= editor.m_numRows) ? nullptr : &editor.m_text[yPos];
 
     if (auto rowLen = row ? std::ssize(*row) : 0; xPos > rowLen) {
         xPos = static_cast<int>(rowLen);
