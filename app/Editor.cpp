@@ -156,6 +156,9 @@ void Editor::processKeypress()
     case ARROW_RIGHT:
         m_cursor.moveCursor(c);
         break;
+
+    default:
+        break;
     }
 }
 
