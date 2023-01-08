@@ -52,6 +52,9 @@ void Editor::Cursor::moveCursor(int const key)
     case ARROW_DOWN:
         if (yPos != Editor::instance().m_numRows) { yPos++; }
         break;
+
+    default:
+        break;
     }
 
     row = (yPos >= Editor::instance().m_numRows) ? nullptr : &Editor::instance().m_text[yPos];
