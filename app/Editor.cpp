@@ -20,7 +20,7 @@
 */
 void Editor::Cursor::moveCursor(int const key)
 {   
-    std::string* row = (yPos >= Editor::instance().m_numRows) ? nullptr : &Editor::instance().m_text[yPos];
+    std::string const* row = (yPos >= Editor::instance().m_numRows) ? nullptr : &Editor::instance().m_text[yPos];
 
     switch (key) {
     case ARROW_LEFT:
