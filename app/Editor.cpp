@@ -59,8 +59,8 @@ void Editor::Cursor::moveCursor(int const key)
 
     row = (yPos >= Editor::instance().m_numRows) ? nullptr : &Editor::instance().m_text[yPos];
 
-    if (int rowLen = row ? std::ssize(*row) : 0; xPos > rowLen) {
-        xPos = rowLen;
+    if (auto rowLen = row ? std::ssize(*row) : 0; xPos > rowLen) {
+        xPos = static_cast<int>(rowLen);
     }
 }
 
