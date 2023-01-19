@@ -90,7 +90,7 @@ Editor::~Editor()
         posix::write(STDOUT_FILENO, "\x1b[H", 3); // reposition the cursor to the top-left corner
     }
     catch (std::system_error const& err) {
-        fmt::fprintf(stderr, "Error while clearing the screen during program exit.\n");
+        fmt::print(stderr, "Error {}\n\tencountered while clearing the screen.\n", err.code().message());
         std::exit(EXIT_FAILURE);
     }
 }
