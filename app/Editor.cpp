@@ -256,7 +256,8 @@ void Editor::open(std::filesystem::path const& path)
     std::ifstream inFile{ path};
 
     if (!inFile) {
-        throw std::runtime_error{"Could not open file."};
+        fmt::fprintf(stderr, "Could not open file {}.\n", m_filename);
+        return;
     }
 
     std::string text{};
