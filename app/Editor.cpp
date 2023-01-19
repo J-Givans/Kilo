@@ -72,7 +72,6 @@ void Editor::Cursor::moveCursor(int const key)
  * Decrements @c m_winsize.row by 1 to create room for the status bar at the bottom of the Editor window.
 */
 Editor::Editor()
-:   m_winsize{}
 {
     m_winsize.row -= 1;
 }
