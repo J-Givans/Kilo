@@ -45,7 +45,7 @@ private:
     Cursor m_cursor;    /// The position of the cursor in the terminal window
     std::string_view KILO_VERSION{ "0.0.1" };   /// The version of this application
     posix::winsize_t m_winsize; /// The size of the terminal window
-    int m_numRows;  /// The number of rows of text in the file
+    int m_numRows {0};  /// The number of rows of text in the file
     std::vector<std::string> m_text;    /// Text read from the file opened
     Offset m_offset;
     std::string_view m_filename;     /// The name of the file currently opened by the editor
