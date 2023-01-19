@@ -245,7 +245,7 @@ void Editor::drawRows(std::string& buffer)
  * @brief Open a file and read its contents
  * @param path A path to the file to be opened.
  *
- * Attempts to open a file for input. Throws a @c std::runtime_error exception on failure
+ * Attempts to open a file for input.
  * Sets the @c m_filename member to the name of the opened file
  * Writes the contents of the file to a vector of strings
  * Increments @c m_numRows to match the number of rows in the opened file
