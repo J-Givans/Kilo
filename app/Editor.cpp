@@ -306,6 +306,7 @@ void Editor::drawStatusBar(std::string& buffer) const
 
     if (len > m_winsize.col) {
         len = m_winsize.col;
+        status.resize(static_cast<std::size_t>(len));
     }
 
     buffer += status;
