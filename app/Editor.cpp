@@ -310,9 +310,17 @@ void Editor::drawStatusBar(std::string& buffer) const
 
     buffer += status;
 
+    std::string rstatus = fmt::format("{}/{}", m_cursor.yPos + 1, m_numRows);
+
     while (len < m_winsize.col) {
-        buffer += " ";
-        ++len;
+        if (auto rlen = std::ssize(rstatus); m_winsize.col - len == rlen) {
+            buffer += rstatus;
+            break;
+        }
+        else {
+            buffer += " ";
+            ++len;
+        }
     }
 
     buffer += "\x1b[m";     // switch to normal formatting (white text; black background)
