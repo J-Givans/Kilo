@@ -22,4 +22,4 @@ target_link_libraries(kilo
 
 target_compile_features(kilo PRIVATE cxx_std_20)
 
-target_compile_options(kilo PRIVATE -Wall -Wextra)
+target_compile_options(kilo PRIVATE -Wall -Wextra -Wconversion)
