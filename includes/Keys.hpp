@@ -16,7 +16,7 @@ enum Keys {
 
 /// Bitwise-ANDs a char with the value 0x1f (or 0b00011111), thus setting the upper 3 bits of the character to 0
 /// This mirrors what the CTRL key does in the terminal  
-constexpr char ctrlKey(char key) noexcept
+constexpr unsigned char ctrlKey(char key) noexcept
 {
     return key &= 0x1f;
 }
