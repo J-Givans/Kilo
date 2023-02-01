@@ -111,31 +111,40 @@ Editor& Editor::instance()
 */
 void Editor::processKeypress()
 {
-    int c = readKey();
+    int c;
 
-    switch (c) {
-    case ctrlKey('q'):
+    try {
+        c = readKey();
+    }
+    catch (std::system_error const& err) {
+        fmt::print(stderr, "Error: {}\n", err.code().message());
+        return;
+    }
+
+    if (c == ctrlKey('q')) {
         std::exit(EXIT_SUCCESS);
-        break;
+    }
+    else {
+        auto keyPressed = static_cast<Key>(c);
+        processKeypressHelper(keyPressed);
+    }
+}
 
-    case HOME:
+void Editor::processKeypressHelper(Key const& key) noexcept
+{
+    if (isHomeKey(key)) {
         m_cursor.xPos = 0;
-        break;
-
-    case END:
+    }
+    else if (isEndKey(key)) {
         if (m_cursor.yPos < m_numRows) {
             m_cursor.xPos = std::ssize(m_text[m_cursor.yPos]);
         }
-
-        break;
-
-    case PAGE_UP:
-    case PAGE_DOWN: 
-    {
-        if (c == PAGE_UP) {
+    }
+    else if (isPageKey(key)) {
+        if (key == Key::PageUp) {
             m_cursor.yPos = m_offset.row;
         }
-        else if (c == PAGE_DOWN) {
+        else if (key == Key::PageDown) {
             m_cursor.yPos = m_offset.row + m_winsize.row - 1;
 
             if (m_cursor.yPos > m_numRows) {
@@ -143,23 +152,12 @@ void Editor::processKeypress()
             }
         }
 
-        auto iterations { m_winsize.row };
-
-        while (--iterations) {
-            m_cursor.moveCursor(c == PAGE_UP ? ARROW_UP : ARROW_DOWN);
+        for (auto iter = m_winsize.row; ; --iter) {
+            m_cursor.moveCursor(key == Key::PageUp ? Key::ArrowUp : Key::ArrowDown);
         }
-    } 
-    break;
-
-    case ARROW_UP:
-    case ARROW_DOWN:
-    case ARROW_LEFT:
-    case ARROW_RIGHT:
-        m_cursor.moveCursor(c);
-        break;
-
-    default:
-        break;
+    }
+    else if (isArrowKey(key)) {
+        m_cursor.moveCursor(key);
     }
 }
 

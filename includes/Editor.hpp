@@ -55,6 +55,7 @@ private:
     void drawRows(std::string& buffer);
     void scroll();
     void drawStatusBar(std::string& buffer) const;
+    void processKeypressHelper(Key const& key) noexcept;
 };
 
 #endif
