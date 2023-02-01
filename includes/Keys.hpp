@@ -11,7 +11,19 @@ enum Keys {
     HOME,
     END,
     PAGE_UP,
-    PAGE_DOWN
+    PAGE_DOWN,
+    Escape
+};
+
+/**
+ * @brief We use integer constants to represent the keys in order to avoid conflicts with the regular [w, a, s, d] keys
+ */
+enum class Key : int {
+    ArrowLeft = 1000, ArrowRight, ArrowUp, ArrowDown,
+    Delete,
+    Home, End,
+    PageUp, PageDown,
+    Escape
 };
 
 /// Bitwise-ANDs a char with the value 0x1f (or 0b00011111), thus setting the upper 3 bits of the character to 0
