@@ -1,6 +1,9 @@
 #ifndef KEYS_HPP
 #define KEYS_HPP
 
+#include <cstddef>
+#include <bit>
+
 /// Arrow keys are represented using integers to avoid conflicts with the regular w a s d keys
 enum Keys {
     ARROW_LEFT = 1000,
@@ -30,7 +33,10 @@ enum class Key : int {
 /// This mirrors what the CTRL key does in the terminal  
 constexpr unsigned char ctrlKey(char key) noexcept
 {
-    return key &= 0x1f;
+    std::byte byte = std::bit_cast<std::byte>(key);
+    byte &= std::byte { 0x1f };
+
+    return std::to_integer<unsigned char>(byte);
 }
 
 [[nodiscard]]
