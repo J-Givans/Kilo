@@ -4,6 +4,7 @@
 #include "Utils.hpp"
 
 #include <cstddef>
+#include <cstdlib>
 #include <filesystem>
 #include <fstream>
 #include <stdexcept>
@@ -18,13 +19,13 @@
  * @brief Moves the cursor in the direction of the arrow-key pressed
  * @param key One of the four possible arrow-keys
 */
-void Cursor::moveCursor(int const key)
+void Cursor::moveCursor(Key const& key)
 {   
     auto const& editor = Editor::instance();
     std::string const* row = (yPos >= editor.m_numRows) ? nullptr : &editor.m_text[yPos];
 
     switch (key) {
-    case ARROW_LEFT:
+    case Key::ArrowLeft:
         if (xPos != 0) { 
             xPos--; 
         }
@@ -35,7 +36,7 @@ void Cursor::moveCursor(int const key)
         
         break;
     
-    case ARROW_RIGHT:
+    case Key::ArrowRight:
         if (row and xPos < std::ssize(*row)) {
             xPos++;
         }
@@ -46,11 +47,11 @@ void Cursor::moveCursor(int const key)
 
         break;
 
-    case ARROW_UP:
+    case Key::ArrowUp:
         if (yPos != 0) { yPos--; }
         break;
 
-    case ARROW_DOWN:
+    case Key::ArrowDown:
         if (yPos != editor.m_numRows) { yPos++; }
         break;
 

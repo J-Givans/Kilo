@@ -25,7 +25,7 @@ struct Cursor
     int yPos{};
 
     /// Move the cursor in the direction of the arrow key pressed
-    void moveCursor(int const key);
+    void moveCursor(Key const& key);
 };
 
 class Editor : public Terminal 
