@@ -5,7 +5,7 @@
 int readKey()
 {
     char c;
-    std::size_t read;
+    [[maybe_unused]] std::size_t read;
 
     while ((read = posix::read(STDIN_FILENO, &c, 1)) != 1) {
     }
