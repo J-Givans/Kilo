@@ -18,8 +18,20 @@ struct Offset
     int col{};
 };
 
+/// Data type representing the position of the cursor in the terminal window
+struct Cursor
+{
+    int xPos{};
+    int yPos{};
+
+    /// Move the cursor in the direction of the arrow key pressed
+    void moveCursor(int const key);
+};
+
 class Editor : public Terminal 
 {
+    friend struct Cursor;
+
 public:
     Editor();
     ~Editor();
@@ -32,16 +44,6 @@ public:
     void open(std::filesystem::path const& path);
 
 private:
-    /// Data type representing the position of the cursor in the terminal window
-    struct Cursor
-    {
-        int xPos{};
-        int yPos{};
-
-        /// Move the cursor in the direction of the arrow key pressed
-        void moveCursor(int const key);
-    };
-
     Cursor m_cursor {};    /// The position of the cursor in the terminal window
     std::string_view KILO_VERSION{ "0.0.1" };   /// The version of this application
     posix::winsize_t m_winsize; /// The size of the terminal window
@@ -50,7 +52,6 @@ private:
     Offset m_offset;
     std::string_view m_filename;     /// The name of the file currently opened by the editor
 
-private:
     void drawRows(std::string& buffer);
     void scroll();
     void drawStatusBar(std::string& buffer) const;

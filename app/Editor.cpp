@@ -18,7 +18,7 @@
  * @brief Moves the cursor in the direction of the arrow-key pressed
  * @param key One of the four possible arrow-keys
 */
-void Editor::Cursor::moveCursor(int const key)
+void Cursor::moveCursor(int const key)
 {   
     auto const& editor = Editor::instance();
     std::string const* row = (yPos >= editor.m_numRows) ? nullptr : &editor.m_text[yPos];
