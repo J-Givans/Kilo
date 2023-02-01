@@ -4,20 +4,6 @@
 #include <cstddef>
 #include <bit>
 
-/// Arrow keys are represented using integers to avoid conflicts with the regular w a s d keys
-enum Keys {
-    ARROW_LEFT = 1000,
-    ARROW_RIGHT,
-    ARROW_UP,
-    ARROW_DOWN,
-    DELETE,
-    HOME,
-    END,
-    PAGE_UP,
-    PAGE_DOWN,
-    Escape
-};
-
 /**
  * @brief We use integer constants to represent the keys in order to avoid conflicts with the regular [w, a, s, d] keys
  */
