@@ -3,6 +3,7 @@
 #include "posix/lib.hpp"
 
 #include <array>
+#include <cctype>
 
 /**
  * @brief Perform low-level keypress handling
@@ -41,7 +42,7 @@ int readKey()
     }
 
     if (sequence[0] == '[') {
-        if (sequence[1] >= '0' and sequence[1] <= '9') {
+        if (std::isdigit(sequence[1])) {
             if (posix::read(STDIN_FILENO, &sequence[2], 1) != 1) {
                 return static_cast<int>(Key::Escape);
             }
