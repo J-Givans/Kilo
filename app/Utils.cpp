@@ -8,6 +8,8 @@ int readKey()
     [[maybe_unused]] std::size_t read;
 
     while ((read = posix::read(STDIN_FILENO, &c, 1)) != 1) {
+        // Recall: from Terminal.cpp, VMIN = 0, VTIME = 1;
+        // read returns [1, count] bytes before the timer expires, or 0 if the timer expires
     }
 
     // If we read an escape character, immediately read 2 more bytes into seq
