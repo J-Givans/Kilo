@@ -41,59 +41,57 @@ int readKey()
         return static_cast<int>(Key::Escape);
     }
 
-    if (sequence[0] == '[') {
-        if (std::isdigit(sequence[1])) {
-            if (posix::read(STDIN_FILENO, &sequence[2], 1) != 1) {
-                return static_cast<int>(Key::Escape);
-            }
-
-            if (sequence[2] == '~') {
-                switch (sequence[1]) {
-                    case '1': 
-                    case '7':
-                        return static_cast<int>(Key::Home);
-
-                    case '3':
-                        return static_cast<int>(Key::Delete);
-                    
-                    case '4':
-                    case '8':
-                        return static_cast<int>(Key::End);
-                    
-                    case '5':
-                        return static_cast<int>(Key::PageUp);
-                    
-                    case '6':
-                        return static_cast<int>(Key::PageDown);
-                    
-                    default:
-                        break;                   
-                }
-            }
+    if (sequence[0] == '[' and std::isdigit(sequence[1])) {
+        if (posix::read(STDIN_FILENO, &sequence[2], 1) != 1) {
+            return static_cast<int>(Key::Escape);
         }
-        else {
+
+        if (sequence[2] == '~') {
             switch (sequence[1]) {
-                case 'A':
-                    return static_cast<int>(Key::ArrowUp);
-                
-                case 'B':
-                    return static_cast<int>(Key::ArrowDown);
-                
-                case 'C':
-                    return static_cast<int>(Key::ArrowRight);
-                
-                case 'D':
-                    return static_cast<int>(Key::ArrowLeft);
-                
-                case 'H':
+                case '1': 
+                case '7':
                     return static_cast<int>(Key::Home);
+
+                case '3':
+                    return static_cast<int>(Key::Delete);
                 
-                case 'F':
+                case '4':
+                case '8':
                     return static_cast<int>(Key::End);
                 
+                case '5':
+                    return static_cast<int>(Key::PageUp);
+                
+                case '6':
+                    return static_cast<int>(Key::PageDown);
+                
                 default:
-                    break;
+                    break;                   
             }
+        }
+    }
+    else if (sequence[0] == '[' and not std::isdigit(sequence[1])) {
+        switch (sequence[1]) {
+            case 'A':
+                return static_cast<int>(Key::ArrowUp);
+            
+            case 'B':
+                return static_cast<int>(Key::ArrowDown);
+            
+            case 'C':
+                return static_cast<int>(Key::ArrowRight);
+            
+            case 'D':
+                return static_cast<int>(Key::ArrowLeft);
+            
+            case 'H':
+                return static_cast<int>(Key::Home);
+            
+            case 'F':
+                return static_cast<int>(Key::End);
+            
+            default:
+                break;
         }
     }
     else if (sequence[0] == 'O') {
