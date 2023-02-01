@@ -33,4 +33,10 @@ constexpr unsigned char ctrlKey(char key) noexcept
     return key &= 0x1f;
 }
 
+[[nodiscard]]
+constexpr bool isEscapeKey(unsigned char key) noexcept
+{
+    return key == '\x1b';
+}
+
 #endif
