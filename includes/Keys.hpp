@@ -45,4 +45,40 @@ constexpr bool isEscapeKey(unsigned char key) noexcept
     return key == '\x1b';
 }
 
+[[nodiscard]]
+constexpr bool isEscapeKey(Key const& key) noexcept
+{
+    return key == Key::Escape;
+}
+
+[[nodiscard]]
+constexpr bool isArrowKey(Key const& key) noexcept
+{
+    return (key == Key::ArrowUp) or (key == Key::ArrowDown) or (key == Key::ArrowLeft) or (key == Key::ArrowRight);
+}
+
+[[nodiscard]]
+constexpr bool isPageKey(Key const& key) noexcept
+{
+    return (key == Key::PageUp) or (key == Key::PageDown);
+}
+
+[[nodiscard]]
+constexpr bool isHomeKey(Key const& key) noexcept
+{
+    return key == Key::Home;
+}
+
+[[nodiscard]]
+constexpr bool isEndKey(Key const& key) noexcept
+{
+    return key == Key::End;
+}
+
+[[nodiscard]]
+constexpr bool isDeleteKey(Key const& key) noexcept
+{
+    return key == Key::Delete;
+}
+
 #endif
