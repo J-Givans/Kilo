@@ -59,6 +59,7 @@ void Cursor::moveCursor(Key const& key)
         break;
     }
 
+    // We have to set row again since yPos is mutated and could refer to a different location
     row = (yPos >= editor.m_numRows) ? nullptr : &editor.m_text[yPos];
 
     if (auto rowLen = row ? std::ssize(*row) : 0; xPos > rowLen) {
