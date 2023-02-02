@@ -283,8 +283,9 @@ void Editor::open(std::filesystem::path const& path)
 
     while (std::getline(inFile, text)) {
         m_text.push_back(text);
-        ++m_numRows;
     }
+
+    m_numRows = static_cast<int>(m_text.size());
 }
 
 /**
