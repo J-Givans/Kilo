@@ -132,6 +132,8 @@ void Editor::processKeypress()
 
 void Editor::processKeypressHelper(Key const& key) noexcept
 {
+    auto const& [col, row] = m_offset.getPosition();
+
     if (isHomeKey(key)) {
         m_cursor.xPos = 0;
     }
@@ -142,10 +144,10 @@ void Editor::processKeypressHelper(Key const& key) noexcept
     }
     else if (isPageKey(key)) {
         if (key == Key::PageUp) {
-            m_cursor.yPos = m_offset.row;
+            m_cursor.yPos = col;
         }
         else if (key == Key::PageDown) {
-            m_cursor.yPos = m_offset.row + m_winsize.row - 1;
+            m_cursor.yPos = col + m_winsize.row - 1;
 
             if (m_cursor.yPos > m_numRows) {
                 m_cursor.yPos = m_numRows;
@@ -175,8 +177,10 @@ void Editor::refreshScreen()
     drawRows(buffer);       // draw column of tildes
     drawStatusBar(buffer);  // draw a blank white status bar of inverted space characters
 
+    auto const& [col, row] = m_offset.getPosition();
+
     // Move the cursor to position (y + 1, x + 1)
-    std::string str = fmt::format("\x1b[{};{}H", (m_cursor.yPos - m_offset.row) + 1, (m_cursor.xPos - m_offset.col) + 1);
+    std::string str = fmt::format("\x1b[{};{}H", (m_cursor.yPos - col) + 1, (m_cursor.xPos - row) + 1);
     buffer += str;
     
     // Show the cursor immediately after repainting
@@ -194,8 +198,10 @@ void Editor::refreshScreen()
 */
 void Editor::drawRows(std::string& buffer)
 {
+    auto const& [col, row] = m_offset.getPosition();
+
     for (int y = 0; y < m_winsize.row; ++y) {
-        if (int filerow = y + m_offset.row; filerow >= m_numRows) {
+        if (int filerow = y + col; filerow >= m_numRows) {
             
             // Display the welcome msg if the user doesn't open a file
             if (m_numRows == 0 and y == m_winsize.row / 3) {
@@ -223,7 +229,7 @@ void Editor::drawRows(std::string& buffer)
             }
         }
         else {
-            auto strlen = std::ssize(m_text[filerow]) - m_offset.col;
+            auto strlen = std::ssize(m_text[filerow]) - row;
 
             if (strlen < 0) {
                 m_text[filerow].resize(0);
@@ -275,20 +281,22 @@ void Editor::open(std::filesystem::path const& path)
 */
 void Editor::scroll()
 {
-    if (m_cursor.yPos < m_offset.row) {
-        m_offset.row = m_cursor.yPos;
+    auto& [col, row] = m_offset.getPosition();
+
+    if (m_cursor.yPos < col) {
+        col = m_cursor.yPos;
     }
 
-    if (m_cursor.yPos >= m_offset.row + m_winsize.row) {
-        m_offset.row = m_cursor.yPos - m_winsize.row + 1;
+    if (m_cursor.yPos >= col + m_winsize.row) {
+        col = m_cursor.yPos - m_winsize.row + 1;
     }
 
-    if (m_cursor.xPos < m_offset.col) {
-        m_offset.col = m_cursor.xPos;
+    if (m_cursor.xPos < row) {
+        row = m_cursor.xPos;
     }
 
-    if (m_cursor.xPos >= m_offset.col + m_winsize.col) {
-        m_offset.col = m_cursor.xPos - m_winsize.col + 1;
+    if (m_cursor.xPos >= row + m_winsize.col) {
+        row = m_cursor.xPos - m_winsize.col + 1;
     }
 }
 

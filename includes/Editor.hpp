@@ -4,19 +4,12 @@
 #include "Keys.hpp"
 #include "Terminal.hpp"
 #include "posix/lib.hpp"
+#include "Offset.hpp"
 
 #include <string>
 #include <filesystem>
 #include <string_view>
 #include <vector>
-
-/// Keeps track of the cursor position the user is currently scrolled to
-/// Default is (0,0) - the top of the file
-struct Offset
-{
-    int row{};
-    int col{};
-};
 
 /// Data type representing the position of the cursor in the terminal window
 struct Cursor

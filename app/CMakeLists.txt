@@ -5,12 +5,15 @@ conan_basic_setup()
 
 target_sources(kilo
     PUBLIC 
-        main.cpp Terminal.cpp 
-        Utils.cpp Editor.cpp
+        Terminal.cpp Utils.cpp Offset.cpp
+        Editor.cpp main.cpp
     PRIVATE 
         "${Kilo_SOURCE_DIR}/includes/Terminal.hpp" 
         "${Kilo_SOURCE_DIR}/includes/Utils.hpp"
+        "${Kilo_SOURCE_DIR}/includes/Keys.hpp"
         "${Kilo_SOURCE_DIR}/includes/Editor.hpp"
+        "${Kilo_SOURCE_DIR}/includes/Vector2.hpp"
+        "${Kilo_SOURCE_DIR}/includes/Offset.hpp"
 )
 
 target_include_directories(kilo PUBLIC ../includes)
