@@ -191,6 +191,39 @@ void Editor::refreshScreen()
 }
 
 /**
+ * @brief Display a welcome message if no file was opened for reading
+ * 
+ * @param buffer The buffer to which the welcome message is written
+ */
+void Editor::displayWelcomeMessage(std::string& buffer) const
+{
+    std::string welcomeMsg = fmt::format("Kilo Editor -- Version {}", KILO_VERSION);
+
+    // If the welcome message is longer than the width of the window, we trim it to fit the window
+    if (std::ssize(welcomeMsg) > m_winsize.col) {
+        welcomeMsg.resize(static_cast<std::size_t>(m_winsize.col));
+    }
+
+    //! @c padding The position from which the welcome message will be printed (it is centered)
+    // Equivalent to the distance from the edges to the welcome message
+    auto padding = (m_winsize.col - std::ssize(welcomeMsg)) / 2;
+
+    // If the welcome message doesn't fill the row from edge to edge, print a ~
+    if (padding > 0) {
+        buffer += "~";
+        padding -= 1;
+    }
+
+    // Add spaces from the end of the welcome string to the edges
+    while (padding > 0) {
+        buffer += " ";
+        padding -= 1;
+    }
+
+    buffer += welcomeMsg;
+}
+
+/**
  * @brief Draw a column of tildes on the left-hand side of the screen
  *
  * Displays the welcome message if the user doesn't open a file
@@ -205,24 +238,7 @@ void Editor::drawRows(std::string& buffer)
             
             // Display the welcome msg if the user doesn't open a file
             if (m_numRows == 0 and y == m_winsize.row / 3) {
-                std::string welcome = fmt::format("Kilo Editor --version {}", KILO_VERSION);
-
-                if (std::ssize(welcome) > m_winsize.col) {
-                    welcome.resize(m_winsize.col);
-                }
-
-                auto padding = (m_winsize.col - welcome.length()) / 2;
-
-                if (padding) {
-                    buffer += "~";
-                    --padding;
-                }
-
-                while (--padding) {
-                    buffer += " ";
-                }
-
-                buffer += welcome;
+                displayWelcomeMessage(buffer);
             }
             else {
                 buffer += "~";

@@ -46,6 +46,7 @@ private:
     std::string_view m_filename;     /// The name of the file currently opened by the editor
 
     void drawRows(std::string& buffer);
+    void displayWelcomeMessage(std::string& buffer) const;
     void scroll();
     void drawStatusBar(std::string& buffer) const;
     void processKeypressHelper(Key const& key) noexcept;
