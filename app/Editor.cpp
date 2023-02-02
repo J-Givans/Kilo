@@ -154,7 +154,7 @@ void Editor::processKeypressHelper(Key const& key) noexcept
             }
         }
 
-        for (auto iter = m_winsize.row; ; --iter) {
+        for (auto iter = m_winsize.row; iter > 0; --iter) {
             m_cursor.moveCursor(key == Key::PageUp ? Key::ArrowUp : Key::ArrowDown);
         }
     }
