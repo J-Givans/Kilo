@@ -229,9 +229,7 @@ void Editor::drawRows(std::string& buffer)
             }
         }
         else {
-            auto strlen = std::ssize(m_text[filerow]) - row;
-
-            if (strlen < 0) {
+            if (auto strlen = std::ssize(m_text[filerow]) - row; strlen < 0) {
                 m_text[filerow].resize(0);
             }
             else if (strlen > m_winsize.col) {
