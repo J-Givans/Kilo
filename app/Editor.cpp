@@ -52,7 +52,7 @@ void Cursor::moveCursor(Key const& key)
         break;
 
     case Key::ArrowDown:
-        if (yPos != editor.m_numRows) { yPos++; }
+        if (yPos < editor.m_numRows) { yPos++; }
         break;
 
     default:
