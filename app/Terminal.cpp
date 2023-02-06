@@ -29,7 +29,7 @@ void Terminal::enableRawMode()
     // Set 8 bits/char
     copy.c_cflag |= (CS8);
 
-    // Read with timeout; read() returns as soon as at least 1 byte is abailable, or when TIME tenths of a second have elapsed
+    // Read with timeout; read() returns as soon as at least 1 byte is available, or when TIME tenths of a second have elapsed
     copy.c_cc[VMIN] = 0;
     copy.c_cc[VTIME] = 1;
 

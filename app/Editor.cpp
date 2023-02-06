@@ -1,34 +1,42 @@
 #include "Editor.hpp"
 #include "Keys.hpp"
 #include "posix/lib.hpp"
+#include "Utils.hpp"
 
 #include <cstddef>
+#include <cstdlib>
 #include <filesystem>
 #include <fstream>
-#include <sstream>
 #include <stdexcept>
 #include <system_error>
 #include <string>
-#include <iostream>
+#include <optional>
 
-/// Move the cursor in the direction of the arrow key pressed
-void Editor::Cursor::moveCursor(int const key)
+#include <fmt/core.h>
+#include <fmt/printf.h>
+
+/**
+ * @brief Moves the cursor in the direction of the arrow-key pressed
+ * @param key One of the four possible arrow-keys
+*/
+void Cursor::moveCursor(Key const& key)
 {   
-    std::string* row = (yPos >= Editor::instance().m_numRows) ? nullptr : &Editor::instance().m_text[yPos];
+    auto const& editor = Editor::instance();
+    std::string const* row = (yPos >= editor.m_numRows) ? nullptr : &editor.m_text[yPos];
 
     switch (key) {
-    case ARROW_LEFT:
+    case Key::ArrowLeft:
         if (xPos != 0) { 
             xPos--; 
         }
         else if (yPos > 0) {
             yPos--;
-            xPos = std::ssize(Editor::instance().m_text[yPos]);
+            xPos = std::ssize(editor.m_text[yPos]);
         }
         
         break;
     
-    case ARROW_RIGHT:
+    case Key::ArrowRight:
         if (row and xPos < std::ssize(*row)) {
             xPos++;
         }
@@ -39,32 +47,44 @@ void Editor::Cursor::moveCursor(int const key)
 
         break;
 
-    case ARROW_UP:
+    case Key::ArrowUp:
         if (yPos != 0) { yPos--; }
         break;
 
-    case ARROW_DOWN:
-        if (yPos != Editor::instance().m_numRows) { yPos++; }
+    case Key::ArrowDown:
+        if (yPos < editor.m_numRows) { yPos++; }
+        break;
+
+    default:
         break;
     }
 
-    row = (yPos >= Editor::instance().m_numRows) ? nullptr : &Editor::instance().m_text[yPos];
+    // We have to set row again since yPos is mutated and could refer to a different location
+    row = (yPos >= editor.m_numRows) ? nullptr : &editor.m_text[yPos];
 
-    if (int rowLen = row ? std::ssize(*row) : 0; xPos > rowLen) {
-        xPos = rowLen;
+    if (auto rowLen = row ? std::ssize(*row) : 0; xPos > rowLen) {
+        xPos = static_cast<int>(rowLen);
     }
 }
 
+/**
+ * @brief Default constructor.
+ *
+ * @details Creates a default instance of an Editor.
+ * Decrements @c m_winsize.row by 1 to create room for the status bar at the bottom of the Editor window.
+*/
 Editor::Editor()
-:   m_cursor{}, m_winsize{}, m_numRows{}, m_text{}, m_offset{}, m_filename{}
 {
     m_winsize.row -= 1;
 }
 
-/// Clear the screen and reposition the cursor on destruction
-/// This handles both cases of program termination, that is, EXIT_SUCCESS and EXIT_FAILURE
-/// This way, if an error occurs in the middle of rendering the screen,
-/// no garbage is left over, and no errors are printed wherever the cursor happens to be
+/**
+ * @brief Clear the screen and reposition the cursor to the top-left corner on program exit.
+ *
+ * Handles both normal and abnormal program termination.
+ * If an error occurs in the middle of rendering the screen, no garbage is left over, and no errors are printed
+ * wherever the cursor happens to be.
+*/
 Editor::~Editor()
 {
     try {
@@ -72,270 +92,260 @@ Editor::~Editor()
         posix::write(STDOUT_FILENO, "\x1b[H", 3); // reposition the cursor to the top-left corner
     }
     catch (std::system_error const& err) {
-        std::cerr << "Error while clearing the screen during program end.\n";
+        fmt::print(stderr, "Error {}\n\tencountered while clearing the screen.\n", err.code().message());
         std::exit(EXIT_FAILURE);
     }
 }
 
-/// Create a static instance of the Editor class
-/// This is a Meyer's singleton
+/**
+ * @brief Creates a static instance of an Editor
+ * @return A reference to a static Editor
+*/
 Editor& Editor::instance()
 {
     static Editor editor{};
     return editor;
 }
 
-/// Perform low-level keypress handling
-int Editor::readKey()
+/** 
+ * @brief Maps keypresses to editor operations 
+*/
+void Editor::processKeypress()
 {
-    char c{};
-    std::size_t read{};
+    int c;
 
-    while ((read = posix::read(STDIN_FILENO, &c, 1)) != 1) {
+    try {
+        c = readKey();
+    }
+    catch (std::system_error const& err) {
+        fmt::print(stderr, "Error: {}\n", err.code().message());
+        return;
     }
 
-    // If we read an escape character, immediately read 2 more bytes into seq
-    // If either of these reads times out, assume the user pressed ESC and return that
-    // Otherwise, look to see if the escape sequence if an arrow key sequence
-    // If it is, return the corresponding w a s d character, else return ESC
-    if (c == '\x1b') {
-        char seq[3];
-
-        if (posix::read(STDIN_FILENO, &seq[0], 1) != 1) {
-            return '\x1b';
-        }
-        if (posix::read(STDIN_FILENO, &seq[1], 1) != 1) {
-            return '\x1b';
-        }
-
-        if (seq[0] == '[') {
-            if (seq[1] >= '0' && seq[1] <= '9') {
-                if (posix::read(STDIN_FILENO, &seq[2], 1) != 1) {
-                    return '\x1b';
-                }
-
-                if (seq[2] == '~') {
-                    switch (seq[1]) {
-                    case '1':
-                        return HOME;
-                    case '3':
-                        return DELETE;
-                    case '4':
-                        return END;
-                    case '5':
-                        return PAGE_UP;
-                    case '6':
-                        return PAGE_DOWN;
-                    case '7':
-                        return HOME;
-                    case '8':
-                        return END;
-                    }
-                }
-            } 
-            else {
-                switch (seq[1]) {
-                case 'A':
-                    return ARROW_UP;
-                case 'B':
-                    return ARROW_DOWN;
-                case 'C':
-                    return ARROW_RIGHT;
-                case 'D':
-                    return ARROW_LEFT;
-                case 'H':
-                    return HOME;
-                case 'F':
-                    return END;
-                }
-            }
-        } 
-        else if (seq[0] == 'O') {
-            switch (seq[1]) {
-            case 'H':
-                return HOME;
-            case 'F':
-                return END;
-            }
-        }
-
-        return '\x1b';
-    } 
+    if (c == ctrlKey('q')) {
+        std::exit(EXIT_SUCCESS);
+    }
     else {
-        return c;
+        auto keyPressed = static_cast<Key>(c);
+        processKeypressHelper(keyPressed);
     }
 }
 
-/// Map keypresses to editor operations
-void Editor::processKeypress()
+void Editor::processKeypressHelper(Key const& key) noexcept
 {
-    int c = readKey();
+    auto const& [col, row] = m_offset.getPosition();
 
-    switch (c) {
-    case ctrlKey('q'):
-        std::exit(EXIT_SUCCESS);
-        break;
-
-    case HOME:
+    if (isHomeKey(key)) {
         m_cursor.xPos = 0;
-        break;
-
-    case END:
+    }
+    else if (isEndKey(key)) {
         if (m_cursor.yPos < m_numRows) {
             m_cursor.xPos = std::ssize(m_text[m_cursor.yPos]);
         }
-
-        break;
-
-    case PAGE_UP:
-    case PAGE_DOWN: 
-    {
-        if (c == PAGE_UP) {
-            m_cursor.yPos = m_offset.row;
+    }
+    else if (isPageKey(key)) {
+        if (key == Key::PageUp) {
+            m_cursor.yPos = col;
         }
-        else if (c == PAGE_DOWN) {
-            m_cursor.yPos = m_offset.row + m_winsize.row - 1;
+        else if (key == Key::PageDown) {
+            m_cursor.yPos = col + m_winsize.row - 1;
 
             if (m_cursor.yPos > m_numRows) {
                 m_cursor.yPos = m_numRows;
             }
         }
 
-        auto iterations { m_winsize.row };
-
-        while (--iterations) {
-            m_cursor.moveCursor(c == PAGE_UP ? ARROW_UP : ARROW_DOWN);
+        for (auto iter = m_winsize.row; iter > 0; --iter) {
+            m_cursor.moveCursor(key == Key::PageUp ? Key::ArrowUp : Key::ArrowDown);
         }
-    } 
-    break;
-
-    case ARROW_UP:
-    case ARROW_DOWN:
-    case ARROW_LEFT:
-    case ARROW_RIGHT:
-        m_cursor.moveCursor(c);
-        break;
+    }
+    else if (isArrowKey(key)) {
+        m_cursor.moveCursor(key);
     }
 }
 
-/// Print text to the screen
+/**
+ * @brief Handles the painting of TUI elements to the screen.
+*/
 void Editor::refreshScreen()
 {
     scroll();
 
-    std::stringstream buffer{};
+    std::string buffer;
+    buffer += "\x1b[?25l";  // hide the cursor while repainting
+    buffer += "\x1b[H";     // reposition the cursor to the top-left corner
 
-    buffer << "\x1b[?25l"; // hide the cursor while repainting
-    buffer << "\x1b[H"; // reposition the cursor to the top-left corner
-
-    drawRows(buffer); // draw column of tildes
+    drawRows(buffer);       // draw column of tildes
     drawStatusBar(buffer);  // draw a blank white status bar of inverted space characters
 
-    buffer << "\x1b[" << (m_cursor.yPos - m_offset.row) + 1 << ";" << (m_cursor.xPos - m_offset.col) + 1 << "H";  // move the cursor to position (y+1, x+1)
-    buffer << "\x1b[?25h"; // show the cursor immediately after repainting
+    auto const& [col, row] = m_offset.getPosition();
+
+    // Move the cursor to position (y + 1, x + 1)
+    std::string str = fmt::format("\x1b[{};{}H", (m_cursor.yPos - col) + 1, (m_cursor.xPos - row) + 1);
+    buffer += str;
+    
+    // Show the cursor immediately after repainting
+    buffer += "\x1b[?25h";
 
     // Reposition the cursor to the top-left corner
-    posix::write(STDOUT_FILENO, buffer.str().c_str(), buffer.str().size());
+    posix::write(STDOUT_FILENO, buffer.c_str(), buffer.length());
 }
 
-/// Draw a column of tildes on the left-hand side of the screen
-/// A tilde is drawn at the beginning of any lines that come after the EOF being edited
-void Editor::drawRows(std::stringstream& buffer)
+/**
+ * @brief Display a welcome message if no file was opened for reading
+ * 
+ * @param buffer The buffer to which the welcome message is written
+ */
+void Editor::displayWelcomeMessage(std::string& buffer) const
 {
-    for (int y{0}; y < m_winsize.row; ++y) {
-        if (auto fileRow = y + m_offset.row; fileRow >= m_numRows) {
-            // Display welcome message iff the user doesn't open a file for reading on program start
+    std::string welcomeMsg = fmt::format("Kilo Editor -- Version {}", KILO_VERSION);
+
+    // If the welcome message is longer than the width of the window, we trim it to fit the window
+    if (std::ssize(welcomeMsg) > m_winsize.col) {
+        welcomeMsg.resize(static_cast<std::size_t>(m_winsize.col));
+    }
+
+    //! @c padding The position from which the welcome message will be printed (it is centered)
+    // Equivalent to the distance from the edges to the welcome message
+    auto padding = (m_winsize.col - std::ssize(welcomeMsg)) / 2;
+
+    // If the welcome message doesn't fill the row from edge to edge, print a ~
+    if (padding > 0) {
+        buffer += "~";
+        padding -= 1;
+    }
+
+    // Add spaces from the end of the welcome string to the edges
+    while (padding > 0) {
+        buffer += " ";
+        padding -= 1;
+    }
+
+    buffer += welcomeMsg;
+}
+
+/**
+ * @brief Draw a column of tildes on the left-hand side of the screen
+ *
+ * Displays the welcome message if the user doesn't open a file
+ * A tilde is drawn at the beginning of any lines that come after the EOF being edited
+*/
+void Editor::drawRows(std::string& buffer)
+{
+    auto const& [col, row] = m_offset.getPosition();
+
+    for (int y = 0; y < m_winsize.row; ++y) {
+        if (int filerow = y + col; filerow >= m_numRows) {
+            
+            // Display the welcome msg if the user doesn't open a file
             if (m_numRows == 0 and y == m_winsize.row / 3) {
-                std::string welcome{"Kilo editor -- version "};
-                welcome += KILO_VERSION;
-
-                if (std::ssize(welcome) > m_winsize.col) {
-                    welcome.resize(m_winsize.col);
-                }
-
-                auto padding { (m_winsize.col - welcome.length()) / 2 };
-
-                if (padding) {
-                    buffer << '~';
-                    --padding;
-                }
-
-                while (--padding) {
-                    buffer << " ";
-                }
-
-                buffer << welcome;
-            } 
+                displayWelcomeMessage(buffer);
+            }
             else {
-                buffer << '~';
+                buffer += "~";
             }
         }
         else {
-            auto strlen = std::ssize(m_text[fileRow]) - m_offset.col;
-
-            if (strlen < 0) {
-                m_text[fileRow].resize(0);
+            if (auto strlen = std::ssize(m_text[filerow]) - row; strlen < 0) {
+                m_text[filerow].resize(0);
             }
             else if (strlen > m_winsize.col) {
-                m_text[fileRow].resize(m_winsize.col);
+                m_text[filerow].resize(m_winsize.col);
             }
 
-            buffer << m_text[fileRow];
+            buffer += m_text[filerow];
         }
 
-        buffer << "\x1b[K"; // clear lines one at a time
-        buffer << "\r\n";
+        buffer += "\x1b[K"; // clear lines one at a time
+        buffer += "\r\n";
     }
 }
 
-/// Open a file and read its contents
+/**
+ * @brief Open a file and read its contents
+ * @param path A path to the file to be opened.
+ *
+ * Attempts to open a file for input.
+ * Sets the @c m_filename member to the name of the opened file
+ * Writes the contents of the file to a vector of strings
+ * Increments @c m_numRows to match the number of rows in the opened file
+*/
 void Editor::open(std::filesystem::path const& path)
 {
     m_filename = path.c_str();
     std::ifstream inFile{ path};
 
     if (!inFile) {
-        throw std::runtime_error{"Could not open file."};
+        fmt::print(stderr, "Could not open file {}.\n", m_filename);
+        return;
     }
 
     std::string text{};
 
     while (std::getline(inFile, text)) {
         m_text.push_back(text);
-        ++m_numRows;
     }
+
+    m_numRows = static_cast<int>(m_text.size());
 }
 
-/// Check if the cursor has moved outside the visible window
-/// If so, adjust m_offset.row so that the cursor is just inside the visible window
+/**
+ * @brief Determine the position of the cursor within the visible window
+ *
+ * Checks if the cursor is still within the visible window. 
+ * If not, it adjusts @c m_offset.row to reposition it within the visible window
+*/
 void Editor::scroll()
 {
-    if (m_cursor.yPos < m_offset.row) {
-        m_offset.row = m_cursor.yPos;
+    auto& [col, row] = m_offset.getPosition();
+
+    if (m_cursor.yPos < col) {
+        col = m_cursor.yPos;
     }
 
-    if (m_cursor.yPos >= m_offset.row + m_winsize.row) {
-        m_offset.row = m_cursor.yPos - m_winsize.row + 1;
+    if (m_cursor.yPos >= col + m_winsize.row) {
+        col = m_cursor.yPos - m_winsize.row + 1;
     }
 
-    if (m_cursor.xPos < m_offset.col) {
-        m_offset.col = m_cursor.xPos;
+    if (m_cursor.xPos < row) {
+        row = m_cursor.xPos;
     }
 
-    if (m_cursor.xPos >= m_offset.col + m_winsize.col) {
-        m_offset.col = m_cursor.xPos - m_winsize.col + 1;
+    if (m_cursor.xPos >= row + m_winsize.col) {
+        row = m_cursor.xPos - m_winsize.col + 1;
     }
 }
 
-void Editor::drawStatusBar(std::stringstream& buffer)
+/**
+ * @brief Draws a status bar at the bottom of the editor window
+ * @param buffer The string to which the contents of the status bar are written
+*/
+void Editor::drawStatusBar(std::string& buffer) const
 {
-    buffer << "\x1b[7m";    // switch to inverted colours (black text; white bg)
-    int len{0};
+    buffer += "\x1b[7m";    // switch to inverted colours (black text, white background)
+    
+    std::string status = fmt::sprintf("%.20s - %d lines", m_filename.empty() ? "[No Name]" : m_filename, m_numRows);
+    auto len = std::ssize(status);
 
-    while (len < m_winsize.col) {
-        buffer << ' ';
-        ++len;
+    if (len > m_winsize.col) {
+        len = m_winsize.col;
+        status.resize(static_cast<std::size_t>(len));
     }
 
-    buffer << "\x1b[m";     // switch to normal formatting (white text; black bg)
+    buffer += status;
+
+    std::string rstatus = fmt::format("{}/{}", m_cursor.yPos + 1, m_numRows);
+
+    while (len < m_winsize.col) {
+        if (auto rlen = std::ssize(rstatus); m_winsize.col - len == rlen) {
+            buffer += rstatus;
+            break;
+        }
+        else {
+            buffer += " ";
+            ++len;
+        }
+    }
+
+    buffer += "\x1b[m";     // switch to normal formatting (white text; black background)
 }
