@@ -31,26 +31,34 @@ namespace posix
         }
     }
 
-    class winsize_t 
+    struct winsize_t 
     {
     public:
         int row;
         int col;
 
-        winsize_t() try : row { getWindowSize().first }, col { getWindowSize().second }
+        /// \brief Default constructor
+        winsize_t()
         {
-        }
-        catch (std::system_error const& e) 
-        {
-            std::cerr << e.code() << ": " << e.code().message() << '\n';
-            std::exit(EXIT_FAILURE);
+            try {
+                auto [r, c] = getWindowSize();
+
+                row = r;
+                col = c;
+            }
+            catch (std::system_error const& e) {
+                std::cerr << e.code() << ": " << e.code().message() << '\n';
+                std::exit(EXIT_FAILURE);
+            }
         }
 
     private:
-        winsize m_winsize;
-
+        /// \brief Get the size of the currently open terminal window
+        /// \returns A pair containing the dimensions of the window
         std::pair<int, int> getWindowSize() const
         {
+            winsize m_winsize;
+            
             posix::ioctl(STDOUT_FILENO, TIOCGWINSZ, &m_winsize);
             return std::make_pair(m_winsize.ws_row, m_winsize.ws_col);
         }
