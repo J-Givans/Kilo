@@ -3,7 +3,7 @@
 
 #include "Keys.hpp"
 #include "Terminal.hpp"
-#include "posix/lib.hpp"
+#include "lib.hpp"
 #include "Offset.hpp"
 
 #include <string>

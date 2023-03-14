@@ -1,5 +1,5 @@
 #include "Terminal.hpp"
-#include "posix/lib.hpp"
+#include "lib.hpp"
 
 #include <cstdlib>
 #include <sys/ioctl.h>

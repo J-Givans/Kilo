@@ -1,6 +1,6 @@
 #include "Editor.hpp"
 #include "Keys.hpp"
-#include "posix/lib.hpp"
+#include "lib.hpp"
 #include "Utils.hpp"
 
 #include <cstddef>
