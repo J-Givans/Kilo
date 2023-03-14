@@ -1,7 +1,6 @@
 add_executable(kilo)
 
-include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-conan_basic_setup()
+find_package(fmt REQUIRED)
 
 target_sources(kilo
     PUBLIC 
@@ -20,7 +19,7 @@ target_include_directories(kilo PUBLIC ../includes)
 
 target_link_libraries(kilo 
     PRIVATE libposix
-    PRIVATE ${CONAN_LIBS}
+    PRIVATE fmt::fmt
 )
 
 target_compile_features(kilo PRIVATE cxx_std_20)
