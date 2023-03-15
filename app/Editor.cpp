@@ -1,4 +1,4 @@
-#include "Editor.hpp"
+#include "Editor/Editor.hpp"
 #include "Keys/Keys.hpp"
 #include "lib.hpp"
 #include "Utils/Utils.hpp"

@@ -10,7 +10,7 @@ target_sources(kilo
         "${Kilo_SOURCE_DIR}/includes/Terminal/Terminal.hpp" 
         "${Kilo_SOURCE_DIR}/includes/Utils/Utils.hpp"
         "${Kilo_SOURCE_DIR}/includes/Keys/Keys.hpp"
-        "${Kilo_SOURCE_DIR}/includes/Editor.hpp"
+        "${Kilo_SOURCE_DIR}/includes/Editor/Editor.hpp"
         "${Kilo_SOURCE_DIR}/includes/Vec2/Vec2.hpp"
         "${Kilo_SOURCE_DIR}/includes/Offset/Offset.hpp"
 )
