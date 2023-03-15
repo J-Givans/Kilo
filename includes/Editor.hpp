@@ -2,7 +2,7 @@
 #define EDITOR_HPP
 
 #include "Keys/Keys.hpp"
-#include "Terminal.hpp"
+#include "Terminal/Terminal.hpp"
 #include "lib.hpp"
 #include "Offset/Offset.hpp"
 

@@ -1,4 +1,4 @@
-#include "Terminal.hpp"
+#include "Terminal/Terminal.hpp"
 #include "lib.hpp"
 
 #include <cstdlib>

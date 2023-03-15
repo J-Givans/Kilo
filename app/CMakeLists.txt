@@ -7,7 +7,7 @@ target_sources(kilo
         Terminal.cpp Utils.cpp Offset.cpp
         Editor.cpp main.cpp
     PRIVATE 
-        "${Kilo_SOURCE_DIR}/includes/Terminal.hpp" 
+        "${Kilo_SOURCE_DIR}/includes/Terminal/Terminal.hpp" 
         "${Kilo_SOURCE_DIR}/includes/Utils/Utils.hpp"
         "${Kilo_SOURCE_DIR}/includes/Keys/Keys.hpp"
         "${Kilo_SOURCE_DIR}/includes/Editor.hpp"
