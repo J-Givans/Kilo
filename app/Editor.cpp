@@ -1,5 +1,5 @@
 #include "Editor.hpp"
-#include "Keys.hpp"
+#include "Keys/Keys.hpp"
 #include "lib.hpp"
 #include "Utils/Utils.hpp"
 

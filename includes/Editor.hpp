@@ -1,7 +1,7 @@
 #ifndef EDITOR_HPP
 #define EDITOR_HPP
 
-#include "Keys.hpp"
+#include "Keys/Keys.hpp"
 #include "Terminal.hpp"
 #include "lib.hpp"
 #include "Offset/Offset.hpp"
