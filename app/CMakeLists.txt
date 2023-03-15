@@ -6,7 +6,7 @@ target_sources(kilo
     PUBLIC 
         Terminal/Terminal.cpp
         Utils/Utils.cpp
-        Offset.cpp
+        Offset/Offset.cpp
         Editor/Editor.cpp 
         main.cpp
     PRIVATE 
