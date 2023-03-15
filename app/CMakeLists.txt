@@ -8,7 +8,7 @@ target_sources(kilo
         Editor.cpp main.cpp
     PRIVATE 
         "${Kilo_SOURCE_DIR}/includes/Terminal.hpp" 
-        "${Kilo_SOURCE_DIR}/includes/Utils.hpp"
+        "${Kilo_SOURCE_DIR}/includes/Utils/Utils.hpp"
         "${Kilo_SOURCE_DIR}/includes/Keys.hpp"
         "${Kilo_SOURCE_DIR}/includes/Editor.hpp"
         "${Kilo_SOURCE_DIR}/includes/Vector2.hpp"

@@ -1,7 +1,7 @@
 #include "Editor.hpp"
 #include "Keys.hpp"
 #include "lib.hpp"
-#include "Utils.hpp"
+#include "Utils/Utils.hpp"
 
 #include <cstddef>
 #include <cstdlib>
