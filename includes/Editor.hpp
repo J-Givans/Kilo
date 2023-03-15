@@ -4,7 +4,7 @@
 #include "Keys.hpp"
 #include "Terminal.hpp"
 #include "lib.hpp"
-#include "Offset.hpp"
+#include "Offset/Offset.hpp"
 
 #include <string>
 #include <filesystem>
