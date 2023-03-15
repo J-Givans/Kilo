@@ -13,7 +13,7 @@
 #include <system_error>
 #include <utility>
 
-namespace posix 
+namespace lib
 {
     void tcgetattr(int fd, termios& termios);
     void tcsetattr(int fd, int optionalActions, termios& termios);
@@ -59,13 +59,13 @@ namespace posix
         {
             winsize m_winsize;
             
-            posix::ioctl(STDOUT_FILENO, TIOCGWINSZ, &m_winsize);
+            lib::ioctl(STDOUT_FILENO, TIOCGWINSZ, &m_winsize);
             return std::make_pair(m_winsize.ws_row, m_winsize.ws_col);
         }
     };
 }
 
-namespace posix::constants 
+namespace lib::constants 
 {
     constexpr int ssize_max = 0x7ffff000;
 }

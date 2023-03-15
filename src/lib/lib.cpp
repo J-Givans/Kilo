@@ -7,7 +7,7 @@
 #include <utility>
 
 /// Wrapper function for tcgetattr
-void posix::tcgetattr(int fd, termios& termios)
+void lib::tcgetattr(int fd, termios& termios)
 {
     errno = 0;
 
@@ -18,7 +18,7 @@ void posix::tcgetattr(int fd, termios& termios)
 }
 
 /// Wrapper function for tcsetattr
-void posix::tcsetattr(int fd, int optionalActions, termios& termios)
+void lib::tcsetattr(int fd, int optionalActions, termios& termios)
 {
     errno = 0;
 
@@ -28,8 +28,8 @@ void posix::tcsetattr(int fd, int optionalActions, termios& termios)
     }
 }
 
-/// Wrapper for POSIX read()
-std::size_t posix::read(int fd, void* buffer, std::size_t count)
+/// Wrapper for posix read()
+std::size_t lib::read(int fd, void* buffer, std::size_t count)
 {
     std::error_code ec;
 
@@ -49,8 +49,8 @@ std::size_t posix::read(int fd, void* buffer, std::size_t count)
     return static_cast<std::size_t>(read);
 }
 
-/// Wrapper for POSIX write()
-std::size_t posix::write(int fd, void const* buffer, std::size_t count)
+/// Wrapper for posix write()
+std::size_t lib::write(int fd, void const* buffer, std::size_t count)
 {
     if (count > constants::ssize_max) {
         throw std::system_error { EINVAL, std::system_category() };

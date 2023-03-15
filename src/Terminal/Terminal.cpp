@@ -12,7 +12,7 @@
 
 void Terminal::enableRawMode()
 {
-    posix::tcgetattr(STDIN_FILENO, m_terminal);
+    lib::tcgetattr(STDIN_FILENO, m_terminal);
 
     struct termios copy {m_terminal};
 
@@ -33,12 +33,12 @@ void Terminal::enableRawMode()
     copy.c_cc[VMIN] = 0;
     copy.c_cc[VTIME] = 1;
 
-    posix::tcsetattr(STDIN_FILENO, TCSAFLUSH, copy);
+    lib::tcsetattr(STDIN_FILENO, TCSAFLUSH, copy);
 }
 
 void Terminal::disableRawMode()
 {
-    posix::tcsetattr(STDIN_FILENO, TCSAFLUSH, m_terminal);
+    lib::tcsetattr(STDIN_FILENO, TCSAFLUSH, m_terminal);
 }
 
 /// Attempts to set the terminal attributes to raw mode during construction

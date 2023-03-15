@@ -88,8 +88,8 @@ Editor::Editor()
 Editor::~Editor()
 {
     try {
-        posix::write(STDOUT_FILENO, "\x1b[2J", 4); // clear the screen
-        posix::write(STDOUT_FILENO, "\x1b[H", 3); // reposition the cursor to the top-left corner
+       lib::write(STDOUT_FILENO, "\x1b[2J", 4); // clear the screen
+       lib::write(STDOUT_FILENO, "\x1b[H", 3); // reposition the cursor to the top-left corner
     }
     catch (std::system_error const& err) {
         fmt::print(stderr, "Error {}\n\tencountered while clearing the screen.\n", err.code().message());
@@ -188,7 +188,7 @@ void Editor::refreshScreen()
     buffer += "\x1b[?25h";
 
     // Reposition the cursor to the top-left corner
-    posix::write(STDOUT_FILENO, buffer.c_str(), buffer.length());
+   lib::write(STDOUT_FILENO, buffer.c_str(), buffer.length());
 }
 
 /**

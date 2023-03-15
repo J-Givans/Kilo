@@ -1,20 +1,20 @@
-# Make new library called libposix
-add_library(libposix)
+# Make new library called lib
+add_library(lib)
 
-# Source and header files for libposix
-target_sources(libposix 
+# Source and header files for lib
+target_sources(lib 
     PRIVATE lib/lib.cpp 
     PUBLIC lib/lib.cpp
 )
 
-# Needed to compile libposix
-target_include_directories(libposix PUBLIC lib)
+# Needed to compile lib
+target_include_directories(lib PUBLIC lib)
 
 # C++ standard to use
-target_compile_features(libposix PRIVATE cxx_std_17)
+target_compile_features(lib PRIVATE cxx_std_17)
 
 # Extra compiler flags; warnings
-target_compile_options(libposix PRIVATE -Wall -Wextra)
+target_compile_options(lib PRIVATE -Wall -Wextra)
 
 ######################################################
 
@@ -41,7 +41,7 @@ target_sources(kilo
 target_include_directories(kilo PUBLIC ../includes)
 
 target_link_libraries(kilo 
-    PRIVATE libposix
+    PRIVATE lib
     PRIVATE fmt::fmt
 )
 

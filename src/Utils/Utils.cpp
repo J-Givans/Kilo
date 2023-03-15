@@ -16,7 +16,7 @@ int readKey()
     [[maybe_unused]] std::size_t bytesRead = 0;
     unsigned char keyRead;
 
-    while ((bytesRead = posix::read(STDIN_FILENO, &keyRead, 1)) != 1) {
+    while ((bytesRead = lib::read(STDIN_FILENO, &keyRead, 1)) != 1) {
         // Recall: from Terminal.cpp, VMIN = 0, VTIME = 1;
         // read returns [1, count] bytes before the timer expires, or 0 if the timer expires
     }
@@ -34,15 +34,15 @@ int readKey()
 
     std::array<unsigned char, 3> sequence;
 
-    if (posix::read(STDIN_FILENO, &sequence[0], 1) != 1) {
+    if (lib::read(STDIN_FILENO, &sequence[0], 1) != 1) {
         return static_cast<int>(Key::Escape);
     }
-    else if (posix::read(STDIN_FILENO, &sequence[1], 1) != 1) {
+    else if (lib::read(STDIN_FILENO, &sequence[1], 1) != 1) {
         return static_cast<int>(Key::Escape);
     }
 
     if (sequence[0] == '[' and std::isdigit(sequence[1])) {
-        if (posix::read(STDIN_FILENO, &sequence[2], 1) != 1) {
+        if (lib::read(STDIN_FILENO, &sequence[2], 1) != 1) {
             return static_cast<int>(Key::Escape);
         }
 
