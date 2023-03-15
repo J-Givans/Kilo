@@ -3,7 +3,11 @@ add_library(lib)
 
 # Source and header files for lib
 target_sources(lib 
-    PRIVATE lib/lib.cpp 
+    PRIVATE 
+        lib/lib.hpp
+        lib/read/read.hpp
+        lib/read/read.cpp
+
     PUBLIC lib/lib.cpp
 )
 
