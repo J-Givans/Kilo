@@ -4,8 +4,9 @@ find_package(fmt REQUIRED)
 
 target_sources(kilo
     PUBLIC 
-        Terminal.cpp Utils.cpp Offset.cpp
+        Terminal/Terminal.cpp
         Utils.cpp 
+        Offset.cpp
         Editor/Editor.cpp 
         main.cpp
     PRIVATE 
