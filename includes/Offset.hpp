@@ -1,7 +1,7 @@
 #ifndef OFFSET_HPP
 #define OFFSET_HPP
 
-#include "Vector2.hpp"
+#include "Vec2/Vec2.hpp"
 
 #include <utility>
 

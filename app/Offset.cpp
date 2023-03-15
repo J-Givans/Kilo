@@ -1,5 +1,5 @@
 #include "Offset.hpp"
-#include "Vector2.hpp"
+#include "Vec2/Vec2.hpp"
 
 using Vector2i = Vector2<int>;
 
