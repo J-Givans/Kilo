@@ -4,7 +4,7 @@
 #include <system_error>
 #include <cstring>
 
-namespace kilo::lib::tcgeatttr
+namespace kilo::lib::tcgetattr
 {
     void tcgetattr(int fd, struct termios* term)
     {

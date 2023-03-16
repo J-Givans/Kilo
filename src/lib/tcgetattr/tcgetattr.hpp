@@ -3,7 +3,7 @@
 
 #include <termios.h>
 
-namespace kilo::lib::tcgeatttr
+namespace kilo::lib::tcgetattr
 {
     /// \brief Retrieve the attributes of a terminal
     /// \param[in] fd A file descriptor that refers to a terminal.
