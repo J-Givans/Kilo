@@ -7,6 +7,10 @@ target_sources(lib
         lib/lib.hpp
         lib/read/read.hpp
         lib/read/read.cpp
+        lib/write/write.hpp
+        lib/write/write.cpp
+        lib/ioctl/ioctl.hpp
+        lib/ioctl/ioctl.cpp
 
     PUBLIC lib/lib.cpp
 )
