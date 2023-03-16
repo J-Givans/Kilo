@@ -32,8 +32,6 @@ target_compile_options(lib PRIVATE -Wall -Wextra)
 
 ######################################################
 
-add_executable(kilo)
-
 find_package(fmt REQUIRED)
 
 target_sources(kilo
