@@ -1,7 +1,8 @@
 #include "Editor/Editor.hpp"
 #include "Keys/Keys.hpp"
-#include "lib.hpp"
 #include "Utils/Utils.hpp"
+
+#include <write/write.hpp>
 
 #include <cstddef>
 #include <cstdlib>
@@ -14,6 +15,8 @@
 
 #include <fmt/core.h>
 #include <fmt/printf.h>
+
+using namespace kilo::lib;
 
 /**
  * @brief Moves the cursor in the direction of the arrow-key pressed
@@ -88,8 +91,8 @@ Editor::Editor()
 Editor::~Editor()
 {
     try {
-       lib::write(STDOUT_FILENO, "\x1b[2J", 4); // clear the screen
-       lib::write(STDOUT_FILENO, "\x1b[H", 3); // reposition the cursor to the top-left corner
+       write::write(STDOUT_FILENO, "\x1b[2J", 4); // clear the screen
+       write::write(STDOUT_FILENO, "\x1b[H", 3); // reposition the cursor to the top-left corner
     }
     catch (std::system_error const& err) {
         fmt::print(stderr, "Error {}\n\tencountered while clearing the screen.\n", err.code().message());
@@ -188,7 +191,7 @@ void Editor::refreshScreen()
     buffer += "\x1b[?25h";
 
     // Reposition the cursor to the top-left corner
-   lib::write(STDOUT_FILENO, buffer.c_str(), buffer.length());
+    write::write(STDOUT_FILENO, buffer.c_str(), buffer.length());
 }
 
 /**
