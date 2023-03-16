@@ -15,6 +15,8 @@ target_sources(lib
         lib/tcgetattr/tcgetattr.cpp
         lib/tcsetattr/tcsetattr.hpp
         lib/tcsetattr/tcsetattr.cpp
+        lib/winsize/winsize.hpp
+        lib/winsize/winsize.cpp
 
     PUBLIC lib/lib.cpp
 )
