@@ -4,7 +4,6 @@ add_library(lib)
 # Source and header files for lib
 target_sources(lib 
     PRIVATE 
-        lib/lib.hpp
         lib/read/read.hpp
         lib/read/read.cpp
         lib/write/write.hpp
@@ -17,8 +16,6 @@ target_sources(lib
         lib/tcsetattr/tcsetattr.cpp
         lib/winsize/winsize.hpp
         lib/winsize/winsize.cpp
-
-    PUBLIC lib/lib.cpp
 )
 
 # Needed to compile lib
