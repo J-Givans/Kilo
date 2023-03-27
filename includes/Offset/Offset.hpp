@@ -20,7 +20,7 @@ struct Offset
     [[deprecated("Prefer direct access to the position member")]]
     Vector2i getPosition() && noexcept;
 
-    Vector2i m_position;
+    Vector2i position;
 };
 
 #endif
