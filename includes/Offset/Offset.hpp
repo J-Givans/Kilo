@@ -11,10 +11,13 @@ struct Offset
 
     constexpr Offset() noexcept = default;
 
+    [[deprecated("Prefer direct access to the position member")]]
     Vector2i const& getPosition() const& noexcept;
 
+    [[deprecated("Prefer direct access to the position member")]]
     Vector2i& getPosition() & noexcept;
 
+    [[deprecated("Prefer direct access to the position member")]]
     Vector2i getPosition() && noexcept;
 
     Vector2i m_position;
