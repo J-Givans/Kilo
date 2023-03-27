@@ -91,8 +91,8 @@ Editor::Editor()
 Editor::~Editor()
 {
     try {
-       write::write(STDOUT_FILENO, "\x1b[2J", 4); // clear the screen
-       write::write(STDOUT_FILENO, "\x1b[H", 3); // reposition the cursor to the top-left corner
+       [[maybe_unused]] auto const clear = write::write(STDOUT_FILENO, "\x1b[2J", 4); // clear the screen
+       [[maybe_unused]] auto const repo =  write::write(STDOUT_FILENO, "\x1b[H", 3); // reposition the cursor to the top-left corner
     }
     catch (std::system_error const& err) {
         fmt::print(stderr, "Error {}\n\tencountered while clearing the screen.\n", err.code().message());
@@ -191,7 +191,7 @@ void Editor::refreshScreen()
     buffer += "\x1b[?25h";
 
     // Reposition the cursor to the top-left corner
-    write::write(STDOUT_FILENO, buffer.c_str(), buffer.length());
+    [[maybe_unused]] auto const rv = write::write(STDOUT_FILENO, buffer.c_str(), buffer.length());
 }
 
 /**
