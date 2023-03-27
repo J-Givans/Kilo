@@ -5,11 +5,10 @@
 
 #include <utility>
 
-class Offset
+struct Offset
 {
     using Vector2i = Vector2<int>;
 
-public:
     constexpr Offset() noexcept = default;
 
     Vector2i const& getPosition() const& noexcept;
@@ -18,7 +17,6 @@ public:
 
     Vector2i getPosition() && noexcept;
 
-private:
     Vector2i m_position;
 };
 
