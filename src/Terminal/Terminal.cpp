@@ -24,13 +24,13 @@ void Terminal::enableRawMode()
     copy.c_iflag &= ~(IGNBRK | BRKINT | PARMRK | ISTRIP | INLCR | IGNCR | ICRNL | IXON);
     
     // Disable all output processing
-    copy.c_oflag &= ~(OPOST);
+    copy.c_oflag &= ~OPOST;
 
     // Disable echoing (except for new lines), canonical mode, signal chars, and extended input processing 
     copy.c_lflag &= ~(ECHO | ECHONL | ICANON | ISIG | IEXTEN);
 
     // Set 8 bits/char
-    copy.c_cflag |= (CS8);
+    copy.c_cflag |= CS8;
 
     // Read with timeout; read() returns as soon as at least 1 byte is available, or when TIME tenths of a second have elapsed
     copy.c_cc[VMIN] = 0;
