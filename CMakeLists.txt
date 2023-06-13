@@ -15,3 +15,5 @@ endif()
 add_executable(kilo)
 
 add_subdirectory(src)
+
+add_subdirectory(tests)
