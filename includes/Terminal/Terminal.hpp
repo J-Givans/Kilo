@@ -15,7 +15,7 @@ public:
     Terminal& operator=(Terminal const&) = delete;
 
 private:
-    struct termios m_terminal {};
+    termios m_terminal {};
 
     void enableRawMode();
     void disableRawMode();

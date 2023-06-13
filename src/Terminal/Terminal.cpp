@@ -17,7 +17,7 @@ void Terminal::enableRawMode()
 {
     tcgetattr::tcgetattr(STDIN_FILENO, &m_terminal);
 
-    struct termios copy {m_terminal};
+    termios copy {m_terminal};
 
     // Ignore BREAK condition, no SIGINT on BREAK condition, don't mark parity condition, don't strip 8th bit from input
     // Don't map NL to CR on input, don't ignore CR on input, don't map CR to NL on input, disable start/stop output flow ctrl
