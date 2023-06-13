@@ -12,6 +12,8 @@ if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     set(CMAKE_CXX_EXTENSIONS OFF)
 endif()
 
+add_executable(kilo)
+
 add_subdirectory(src)
 
-add_subdirectory(app)
+add_subdirectory(tests)

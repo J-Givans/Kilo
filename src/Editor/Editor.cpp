@@ -1,7 +1,8 @@
-#include "Editor.hpp"
-#include "Keys.hpp"
-#include "posix/lib.hpp"
-#include "Utils.hpp"
+#include "Editor/Editor.hpp"
+#include "Keys/Keys.hpp"
+#include "Utils/Utils.hpp"
+
+#include <write/write.hpp>
 
 #include <cstddef>
 #include <cstdlib>
@@ -14,6 +15,8 @@
 
 #include <fmt/core.h>
 #include <fmt/printf.h>
+
+using namespace kilo::lib;
 
 /**
  * @brief Moves the cursor in the direction of the arrow-key pressed
@@ -88,8 +91,8 @@ Editor::Editor()
 Editor::~Editor()
 {
     try {
-        posix::write(STDOUT_FILENO, "\x1b[2J", 4); // clear the screen
-        posix::write(STDOUT_FILENO, "\x1b[H", 3); // reposition the cursor to the top-left corner
+       [[maybe_unused]] auto const clear = write::write(STDOUT_FILENO, "\x1b[2J", 4); // clear the screen
+       [[maybe_unused]] auto const repo =  write::write(STDOUT_FILENO, "\x1b[H", 3); // reposition the cursor to the top-left corner
     }
     catch (std::system_error const& err) {
         fmt::print(stderr, "Error {}\n\tencountered while clearing the screen.\n", err.code().message());
@@ -133,7 +136,7 @@ void Editor::processKeypress()
 
 void Editor::processKeypressHelper(Key const& key) noexcept
 {
-    auto const& [col, row] = m_offset.getPosition();
+    auto const& [col, row] = m_offset.position;
 
     if (isHomeKey(key)) {
         m_cursor.xPos = 0;
@@ -178,7 +181,7 @@ void Editor::refreshScreen()
     drawRows(buffer);       // draw column of tildes
     drawStatusBar(buffer);  // draw a blank white status bar of inverted space characters
 
-    auto const& [col, row] = m_offset.getPosition();
+    auto const& [col, row] = m_offset.position;
 
     // Move the cursor to position (y + 1, x + 1)
     std::string str = fmt::format("\x1b[{};{}H", (m_cursor.yPos - col) + 1, (m_cursor.xPos - row) + 1);
@@ -188,7 +191,7 @@ void Editor::refreshScreen()
     buffer += "\x1b[?25h";
 
     // Reposition the cursor to the top-left corner
-    posix::write(STDOUT_FILENO, buffer.c_str(), buffer.length());
+    [[maybe_unused]] auto const rv = write::write(STDOUT_FILENO, buffer.c_str(), buffer.length());
 }
 
 /**
@@ -232,7 +235,7 @@ void Editor::displayWelcomeMessage(std::string& buffer) const
 */
 void Editor::drawRows(std::string& buffer)
 {
-    auto const& [col, row] = m_offset.getPosition();
+    auto const& [col, row] = m_offset.position;
 
     for (int y = 0; y < m_winsize.row; ++y) {
         if (int filerow = y + col; filerow >= m_numRows) {
@@ -297,7 +300,7 @@ void Editor::open(std::filesystem::path const& path)
 */
 void Editor::scroll()
 {
-    auto& [col, row] = m_offset.getPosition();
+    auto& [col, row] = m_offset.position;
 
     if (m_cursor.yPos < col) {
         col = m_cursor.yPos;

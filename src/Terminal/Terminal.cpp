@@ -1,5 +1,6 @@
-#include "Terminal.hpp"
-#include "posix/lib.hpp"
+#include "Terminal/Terminal.hpp"
+#include <tcgetattr/tcgetattr.hpp>
+#include <tcsetattr/tcsetattr.hpp>
 
 #include <cstdlib>
 #include <sys/ioctl.h>
@@ -10,9 +11,11 @@
 #include <iostream>
 #include <utility>
 
+using namespace kilo::lib;
+
 void Terminal::enableRawMode()
 {
-    posix::tcgetattr(STDIN_FILENO, m_terminal);
+    tcgetattr::tcgetattr(STDIN_FILENO, &m_terminal);
 
     struct termios copy {m_terminal};
 
@@ -33,12 +36,12 @@ void Terminal::enableRawMode()
     copy.c_cc[VMIN] = 0;
     copy.c_cc[VTIME] = 1;
 
-    posix::tcsetattr(STDIN_FILENO, TCSAFLUSH, copy);
+    tcsetattr::tcsetattr(STDIN_FILENO, TCSAFLUSH, &copy);
 }
 
 void Terminal::disableRawMode()
 {
-    posix::tcsetattr(STDIN_FILENO, TCSAFLUSH, m_terminal);
+    tcsetattr::tcsetattr(STDIN_FILENO, TCSAFLUSH, &m_terminal);
 }
 
 /// Attempts to set the terminal attributes to raw mode during construction
