@@ -14,11 +14,11 @@ public:
     Terminal(Terminal const&) = delete;
     Terminal& operator=(Terminal const&) = delete;
 
-    void enableRawMode();
-    void disableRawMode();
-
 private:
     struct termios m_terminal {};
+
+    void enableRawMode();
+    void disableRawMode();
 };
 
 #endif
