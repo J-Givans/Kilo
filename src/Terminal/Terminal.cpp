@@ -7,15 +7,14 @@
 #include <termios.h>
 #include <unistd.h>
 
+#include <cerrno>
 #include <system_error>
 #include <iostream>
 #include <utility>
 
-using namespace kilo::lib;
-
 void Terminal::enableRawMode()
 {
-    tcgetattr::tcgetattr(STDIN_FILENO, &m_terminal);
+    kilo::lib::tcgetattr::tcgetattr(STDIN_FILENO, &m_terminal);
 
     termios copy {m_terminal};
 
@@ -36,12 +35,12 @@ void Terminal::enableRawMode()
     copy.c_cc[VMIN] = 0;
     copy.c_cc[VTIME] = 1;
 
-    tcsetattr::tcsetattr(STDIN_FILENO, TCSAFLUSH, &copy);
+    kilo::lib::tcsetattr::tcsetattr(STDIN_FILENO, TCSAFLUSH, &copy);
 }
 
 void Terminal::disableRawMode()
 {
-    tcsetattr::tcsetattr(STDIN_FILENO, TCSAFLUSH, &m_terminal);
+    kilo::lib::tcsetattr::tcsetattr(STDIN_FILENO, TCSAFLUSH, &m_terminal);
 }
 
 /// Attempts to set the terminal attributes to raw mode during construction
