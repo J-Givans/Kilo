@@ -3,8 +3,6 @@
 
 #include <termios.h>
 
-#include <utility>
-
 class Terminal {
 public:
     Terminal();
