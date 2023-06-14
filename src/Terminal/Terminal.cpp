@@ -21,13 +21,13 @@ void Terminal::enableRawMode()
 
     // Ignore BREAK condition, no SIGINT on BREAK condition, don't mark parity condition, don't strip 8th bit from input
     // Don't map NL to CR on input, don't ignore CR on input, don't map CR to NL on input, disable start/stop output flow ctrl
-    copy.c_iflag &= ~(IGNBRK | BRKINT | PARMRK | ISTRIP | INLCR | IGNCR | ICRNL | IXON);
+    copy.c_iflag &= ~(BRKINT | ICRNL | INPCK | ISTRIP | IXON);
     
     // Disable all output processing
     copy.c_oflag &= ~OPOST;
 
     // Disable echoing (except for new lines), canonical mode, signal chars, and extended input processing 
-    copy.c_lflag &= ~(ECHO | ECHONL | ICANON | ISIG | IEXTEN);
+    copy.c_lflag &= ~(ECHO | ICANON | ISIG | IEXTEN);
 
     // Set 8 bits/char
     copy.c_cflag |= CS8;
