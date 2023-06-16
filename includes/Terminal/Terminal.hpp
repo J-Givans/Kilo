@@ -8,14 +8,15 @@ public:
     Terminal();
     ~Terminal();
 
+    /// \brief Set the terminal driver into raw mode
+    void enableRawMode();
+
     /** Disable copy and move semantics */
     Terminal(Terminal const&) = delete;
     Terminal& operator=(Terminal const&) = delete;
 
 private:
     termios m_terminal {};
-
-    void enableRawMode();
 };
 
 #endif
