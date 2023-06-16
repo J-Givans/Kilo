@@ -44,7 +44,30 @@ void Terminal::enableRawMode()
         throw std::system_error(errno, std::generic_category(), "Could not set the terminal driver to raw mode :");
     }
 
-        m_state = TerminalState::Raw;
+    // Verify that the changes stuck. tcsetattr can return 0 on partial success
+    // First, attempt to query the terminal driver and store its settings in copy
+    // If this fails, throw an exception
+    
+    if (errno = 0; tcgetattr(STDIN_FILENO, &copy) == -1) {
+        throw std::system_error(errno, std::generic_category(), "Could not query the terminal driver to verify that it was set to raw mode :");
+    }
+
+    // We then check if the relevant fields match the changes we made
+
+    if (   (copy.c_iflag & (BRKINT | ICRNL | INPCK | ISTRIP | IXON)) 
+        or (copy.c_oflag & OPOST) 
+        or (copy.c_lflag & (ECHO | ICANON | ISIG | IEXTEN)) 
+        or (copy.c_cflag != CS8)  
+        or (copy.c_cc[VMIN] != 0) 
+        or (copy.c_cc[VTIME] != 1)   )
+    {
+        // Only some of the changes were made
+        // Restore the original settings
+        tcsetattr(STDIN_FILENO, TCSAFLUSH, &m_terminal);
+        throw std::system_error(EINVAL, std::generic_category(), "Setting terminal driver to raw mode partially succssful :");
+    }
+
+    m_state = TerminalState::Raw;
 
     Ensures(m_state == TerminalState::Raw);
 }
