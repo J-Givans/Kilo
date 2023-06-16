@@ -14,6 +14,11 @@ namespace
     /// \brief Make changes to the terminal driver such that it is set into non-canonical raw mode
     /// \param[inout] terminalHandle struct containing settings to be written to the terminal driver to enact this change
     void ttyRaw(termios& terminalHandle) noexcept;
+    
+    /// \brief Verify that the changes made to the terminal driver were successful
+    /// \param[inout] terminalHandle struct containing the current settings of the terminal driver
+    [[nodiscard]]
+    bool verifyTtyRaw(termios const& terminalHandle) noexcept;
 }
 
 /// \details Query the terminal driver and write its settings to m_terminal
@@ -75,14 +80,7 @@ void Terminal::enableRawMode()
     }
 
     // We then check if the relevant fields match the changes we made
-
-    if (   (copy.c_iflag & (BRKINT | ICRNL | INPCK | ISTRIP | IXON)) 
-        or (copy.c_oflag & OPOST) 
-        or (copy.c_lflag & (ECHO | ICANON | ISIG | IEXTEN)) 
-        or ((copy.c_cflag & CS8) != CS8)
-        or (copy.c_cc[VMIN] != 0) 
-        or (copy.c_cc[VTIME] != 1)   )
-    {
+    if (verifyTtyRaw(copy)) {
         // Only some of the changes were made
         // Restore the original settings
         tcsetattr(STDIN_FILENO, TCSAFLUSH, &m_terminal);
@@ -117,5 +115,16 @@ namespace
         
         // or when TIME tenths of a second have elapsed
         terminalHandle.c_cc[VTIME] = 1;
+    }
+
+    [[nodiscard]]
+    bool verifyTtyRaw(termios const& terminalHandle) noexcept
+    {
+        return (terminalHandle.c_iflag & (BRKINT | ICRNL | INPCK | ISTRIP | IXON)) 
+            or (terminalHandle.c_oflag & OPOST) 
+            or (terminalHandle.c_lflag & (ECHO | ICANON | ISIG | IEXTEN))
+            or ((terminalHandle.c_cflag & CS8) != CS8)
+            or (terminalHandle.c_cc[VMIN] != 0)
+            or (terminalHandle.c_cc[VTIME] != 1);
     }
 }
