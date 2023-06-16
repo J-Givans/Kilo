@@ -13,7 +13,7 @@
 #include <fmt/core.h>
 #include <gsl/assert>
 
-void Terminal::enableRawMode() const
+void Terminal::enableRawMode()
 {
     Expects(m_state == TerminalState::Reset);
 
