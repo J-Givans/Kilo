@@ -98,13 +98,13 @@ namespace
     {
         // Ignore BREAK condition, no SIGINT on BREAK condition; don't mark parity condition; don't strip 8th bit from input
         // Don't map NL to CR on input; disable start/stop output flow ctrl
-        terminalHandle.c_iflag &= ~(BRKINT | ICRNL | INPCK | ISTRIP | IXON);
+        terminalHandle.c_iflag &= ~(static_cast<unsigned>(BRKINT | ICRNL | INPCK | ISTRIP | IXON));
         
         // Disable all output processing
-        terminalHandle.c_oflag &= ~OPOST;
+        terminalHandle.c_oflag &= ~(static_cast<unsigned>(OPOST));
         
         // Disable echoing (except for new lines), canonical mode, signal chars, and extended input processing 
-        terminalHandle.c_lflag &= ~(ECHO | ICANON | ISIG | IEXTEN);
+        terminalHandle.c_lflag &= ~(static_cast<unsigned>(ECHO | ICANON | ISIG | IEXTEN));
         
         // Set 8 bits/char
         terminalHandle.c_cflag |= CS8;
