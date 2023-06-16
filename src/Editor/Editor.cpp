@@ -78,6 +78,7 @@ void Cursor::moveCursor(Key const& key)
 */
 Editor::Editor()
 {
+    m_terminalCtrl.enableRawMode();
     m_winsize.row -= 1;
 }
 

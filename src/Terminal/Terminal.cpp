@@ -17,8 +17,8 @@
 
 void Terminal::enableRawMode()
 {
-    kilo::lib::tcgetattr::tcgetattr(STDIN_FILENO, &m_terminal);
-
+    // We expect to have populated m_terminal with the terminal driver settings
+    // Copy these into `copy`, from which we'll make our changes
     termios copy {m_terminal};
 
     // Ignore BREAK condition, no SIGINT on BREAK condition, don't mark parity condition, don't strip 8th bit from input
@@ -43,19 +43,16 @@ void Terminal::enableRawMode()
 
 /// \details Query the terminal driver and write its settings to m_terminal
 /// \details Exit the program if this fails
-/// Attempts to set the terminal attributes to raw mode during construction
-/// If construction fails then we exit the program with a fail status code as it is in an invalid state
 Terminal::Terminal()
 {
-    try {
-        enableRawMode();
-    }
-    catch (std::system_error const& err) {
-        std::cerr << err.what() << "\r\n";
-        std::cerr << err.code() << ": " << err.code().message() << "\r\n";
-
+    // Attempt to query the terminal driver and write its settings to m_terminal
+    // If this fails, log the error and exit the program with status EXIT_FAILURE
+    if (errno = 0; tcgetattr(STDIN_FILENO, &m_terminal) == -1) {
+        fmt::print(stderr, "tcgetattr failed: {}", std::strerror(errno));
         std::exit(EXIT_FAILURE);
     }
+
+    Ensures(errno != ENOTTY);
 }
 
 /// \details Reset the terminal driver to canonical mode
