@@ -47,6 +47,8 @@ void Terminal::enableRawMode() const
 /// \details Exit the program if this fails
 Terminal::Terminal()
 {
+    Expects(m_state == TerminalState::Reset);
+
     // Attempt to query the terminal driver and write its settings to m_terminal
     // If this fails, log the error and exit the program with status EXIT_FAILURE
     if (errno = 0; tcgetattr(STDIN_FILENO, &m_terminal) == -1) {
@@ -54,7 +56,7 @@ Terminal::Terminal()
         std::exit(EXIT_FAILURE);
     }
 
-    Ensures(errno != ENOTTY);
+    Ensures(m_state == TerminalState::Reset);
 }
 
 /// \details Reset the terminal driver to canonical mode
