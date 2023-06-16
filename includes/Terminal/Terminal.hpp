@@ -17,7 +17,9 @@ public:
 
 private:
     enum class TerminalState { Reset, Raw };
+
     termios m_terminal;
+    TerminalState m_state = TerminalState::Reset;
 };
 
 #endif
