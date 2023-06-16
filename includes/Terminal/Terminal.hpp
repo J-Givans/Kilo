@@ -16,7 +16,6 @@ private:
     termios m_terminal {};
 
     void enableRawMode();
-    void disableRawMode();
 };
 
 #endif

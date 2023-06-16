@@ -41,11 +41,8 @@ void Terminal::enableRawMode()
     kilo::lib::tcsetattr::tcsetattr(STDIN_FILENO, TCSAFLUSH, &copy);
 }
 
-void Terminal::disableRawMode()
-{
-    kilo::lib::tcsetattr::tcsetattr(STDIN_FILENO, TCSAFLUSH, &m_terminal);
-}
-
+/// \details Query the terminal driver and write its settings to m_terminal
+/// \details Exit the program if this fails
 /// Attempts to set the terminal attributes to raw mode during construction
 /// If construction fails then we exit the program with a fail status code as it is in an invalid state
 Terminal::Terminal()
