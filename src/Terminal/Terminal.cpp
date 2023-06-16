@@ -12,6 +12,9 @@
 #include <iostream>
 #include <utility>
 
+#include <fmt/core.h>
+#include <gsl/assert>
+
 void Terminal::enableRawMode()
 {
     kilo::lib::tcgetattr::tcgetattr(STDIN_FILENO, &m_terminal);
@@ -58,15 +61,16 @@ Terminal::Terminal()
     }
 }
 
+/// \details Reset the terminal driver to canonical mode
+/// \details Exits the program if this fails
 Terminal::~Terminal()
 {
-    try {
-        disableRawMode();
-    }
-    catch (std::system_error const& err) {
-        std::cerr << err.what() << "\r\n";
-        std::cerr << err.code() << ": " << err.code().message() << "\r\n";
-
+    // Attempt to set the terminal driver settings to those in m_terminal
+    // If this fails, log the error that occured and exit the program with status EXIT_FAILURE
+    if (errno = 0; tcsetattr(STDIN_FILENO, TCSAFLUSH, &m_terminal) == -1) {
+        fmt::print(stderr, "tcsetattr failed: {}", std::strerror(errno));
         std::exit(EXIT_FAILURE);
     }
+
+    Ensures(errno != ENOTTY);
 }
