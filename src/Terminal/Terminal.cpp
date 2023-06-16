@@ -41,7 +41,7 @@ void Terminal::enableRawMode()
     // Attempt to set the above settings to the terminal driver
     // If this fails, throw an exception
     if (errno = 0; tcsetattr(STDIN_FILENO, TCSAFLUSH, &copy) == -1) {
-        throw std::system_error(errno, std::generic_category(), std::strerror(errno));
+        throw std::system_error(errno, std::generic_category(), "Could not set the terminal driver to raw mode :");
     }
     else {
         m_state = TerminalState::Raw;
