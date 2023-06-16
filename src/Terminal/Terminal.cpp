@@ -9,6 +9,13 @@
 #include <fmt/core.h>
 #include <gsl/assert>
 
+namespace 
+{
+    /// \brief Make changes to the terminal driver such that it is set into non-canonical raw mode
+    /// \param[inout] terminalHandle struct containing settings to be written to the terminal driver to enact this change
+    void ttyRaw(termios& terminalHandle) noexcept;
+}
+
 /// \details Query the terminal driver and write its settings to m_terminal
 /// \details Exit the program if this fails
 Terminal::Terminal()
@@ -50,23 +57,8 @@ void Terminal::enableRawMode()
     // We expect to have populated m_terminal with the terminal driver settings
     // Copy these into `copy`, from which we'll make our changes
     termios copy {m_terminal};
-
-    // Ignore BREAK condition, no SIGINT on BREAK condition, don't mark parity condition, don't strip 8th bit from input
-    // Don't map NL to CR on input, don't ignore CR on input, don't map CR to NL on input, disable start/stop output flow ctrl
-    copy.c_iflag &= ~(BRKINT | ICRNL | INPCK | ISTRIP | IXON);
     
-    // Disable all output processing
-    copy.c_oflag &= ~OPOST;
-
-    // Disable echoing (except for new lines), canonical mode, signal chars, and extended input processing 
-    copy.c_lflag &= ~(ECHO | ICANON | ISIG | IEXTEN);
-
-    // Set 8 bits/char
-    copy.c_cflag |= CS8;
-
-    // Read with timeout; read() returns as soon as at least 1 byte is available, or when TIME tenths of a second have elapsed
-    copy.c_cc[VMIN] = 0;
-    copy.c_cc[VTIME] = 1;
+    ttyRaw(copy);
 
     // Attempt to set the above settings to the terminal driver
     // If this fails, throw an exception
@@ -100,4 +92,30 @@ void Terminal::enableRawMode()
     m_state = TerminalState::Raw;
 
     Ensures(m_state == TerminalState::Raw);
+}
+
+namespace
+{
+    void ttyRaw(termios& terminalHandle) noexcept
+    {
+        // Ignore BREAK condition, no SIGINT on BREAK condition; don't mark parity condition; don't strip 8th bit from input
+        // Don't map NL to CR on input; disable start/stop output flow ctrl
+        terminalHandle.c_iflag &= ~(BRKINT | ICRNL | INPCK | ISTRIP | IXON);
+        
+        // Disable all output processing
+        terminalHandle.c_oflag &= ~OPOST;
+        
+        // Disable echoing (except for new lines), canonical mode, signal chars, and extended input processing 
+        terminalHandle.c_lflag &= ~(ECHO | ICANON | ISIG | IEXTEN);
+        
+        // Set 8 bits/char
+        terminalHandle.c_cflag |= CS8;
+
+        // Read with timeout
+        // read() returns as soon as at least 1 byte is available, 
+        terminalHandle.c_cc[VMIN] = 0;
+        
+        // or when TIME tenths of a second have elapsed
+        terminalHandle.c_cc[VTIME] = 1;
+    }
 }
