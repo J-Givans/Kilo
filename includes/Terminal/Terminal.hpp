@@ -12,10 +12,10 @@ public:
     void enableRawMode();
 
 private:
-    enum class TerminalState { Reset, Raw };
+    enum class TerminalState { Default, Reset, Raw };
 
     termios m_terminal;
-    TerminalState m_state = TerminalState::Reset;
+    TerminalState m_state = TerminalState::Default;
 };
 
 #endif
