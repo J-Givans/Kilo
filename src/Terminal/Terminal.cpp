@@ -15,6 +15,8 @@
 
 void Terminal::enableRawMode() const
 {
+    Expects(m_state == TerminalState::Reset);
+
     // We expect to have populated m_terminal with the terminal driver settings
     // Copy these into `copy`, from which we'll make our changes
     termios copy {m_terminal};
