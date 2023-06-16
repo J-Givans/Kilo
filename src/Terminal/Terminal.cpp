@@ -57,7 +57,7 @@ void Terminal::enableRawMode()
     if (   (copy.c_iflag & (BRKINT | ICRNL | INPCK | ISTRIP | IXON)) 
         or (copy.c_oflag & OPOST) 
         or (copy.c_lflag & (ECHO | ICANON | ISIG | IEXTEN)) 
-        or (copy.c_cflag != CS8)  
+        or ((copy.c_cflag & CS8) != CS8)
         or (copy.c_cc[VMIN] != 0) 
         or (copy.c_cc[VTIME] != 1)   )
     {
