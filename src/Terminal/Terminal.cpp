@@ -99,5 +99,5 @@ Terminal::~Terminal()
         std::exit(EXIT_FAILURE);
     }
 
-    Ensures(errno != ENOTTY);
+    m_state = TerminalState::Reset;
 }
