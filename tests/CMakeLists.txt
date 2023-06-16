@@ -13,7 +13,7 @@ target_link_libraries(tests
 
 target_sources(tests
     PUBLIC
-        dummy.test.cpp
+        Terminal.test.cpp
 )
 
 target_compile_features(tests PRIVATE cxx_std_20)
