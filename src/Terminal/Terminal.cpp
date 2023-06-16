@@ -1,14 +1,10 @@
 #include "Terminal/Terminal.hpp"
 
-#include <cstdlib>
-#include <sys/ioctl.h>
-#include <termios.h>
 #include <unistd.h>
 
 #include <cerrno>
+#include <cstdlib>
 #include <system_error>
-#include <iostream>
-#include <utility>
 
 #include <fmt/core.h>
 #include <gsl/assert>
