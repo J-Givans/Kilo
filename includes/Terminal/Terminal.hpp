@@ -16,7 +16,8 @@ public:
     Terminal& operator=(Terminal const&) = delete;
 
 private:
-    termios m_terminal {};
+    enum class TerminalState { Reset, Raw };
+    termios m_terminal;
 };
 
 #endif
