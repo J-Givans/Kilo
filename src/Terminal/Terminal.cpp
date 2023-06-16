@@ -92,6 +92,8 @@ Terminal::Terminal()
 /// \details Exits the program if this fails
 Terminal::~Terminal()
 {
+    Expects(m_state == TerminalState::Raw);
+
     // Attempt to set the terminal driver settings to those in m_terminal
     // If this fails, log the error that occured and exit the program with status EXIT_FAILURE
     if (errno = 0; tcsetattr(STDIN_FILENO, TCSAFLUSH, &m_terminal) == -1) {
@@ -100,4 +102,6 @@ Terminal::~Terminal()
     }
 
     m_state = TerminalState::Reset;
+
+    Ensures(m_state == TerminalState::Reset);
 }
