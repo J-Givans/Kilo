@@ -11,6 +11,11 @@ target_link_libraries(tests
         GTest::gmock_main
 )
 
+target_include_directories(tests
+    PUBLIC
+        "${PROJECT_SOURCE_DIR}/includes"
+)
+
 target_sources(tests
     PUBLIC
         Terminal.test.cpp
