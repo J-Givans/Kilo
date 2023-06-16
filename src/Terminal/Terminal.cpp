@@ -38,7 +38,11 @@ void Terminal::enableRawMode() const
     copy.c_cc[VMIN] = 0;
     copy.c_cc[VTIME] = 1;
 
-    kilo::lib::tcsetattr::tcsetattr(STDIN_FILENO, TCSAFLUSH, &copy);
+    // Attempt to set the above settings to the terminal driver
+    // If this fails, throw an exception
+    if (errno = 0; tcsetattr(STDIN_FILENO, TCSAFLUSH, &copy) == -1) {
+        throw std::system_error(errno, std::generic_category(), std::strerror(errno));
+    }
 }
 
 /// \details Query the terminal driver and write its settings to m_terminal
