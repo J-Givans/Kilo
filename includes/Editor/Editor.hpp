@@ -21,7 +21,7 @@ struct Cursor
     void moveCursor(Key const& key);
 };
 
-class Editor : public Terminal 
+class Editor
 {
     friend struct Cursor;
 
@@ -37,6 +37,7 @@ public:
     void open(std::filesystem::path const& path);
 
 private:
+    Terminal m_terminalCtrl;
     Cursor m_cursor {};    /// The position of the cursor in the terminal window
     std::string_view KILO_VERSION{ "0.0.1" };   /// The version of this application
     kilo::lib::winsize::winsize m_winsize;  // The size of the terminal window
