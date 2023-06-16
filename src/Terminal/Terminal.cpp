@@ -1,6 +1,4 @@
 #include "Terminal/Terminal.hpp"
-#include <tcgetattr/tcgetattr.hpp>
-#include <tcsetattr/tcsetattr.hpp>
 
 #include <cstdlib>
 #include <sys/ioctl.h>
