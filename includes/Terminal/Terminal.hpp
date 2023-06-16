@@ -9,7 +9,7 @@ public:
     ~Terminal();
 
     /// \brief Set the terminal driver into raw mode
-    void enableRawMode();
+    void enableRawMode() const;
 
     /** Disable copy and move semantics */
     Terminal(Terminal const&) = delete;

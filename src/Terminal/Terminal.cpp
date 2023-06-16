@@ -15,7 +15,7 @@
 #include <fmt/core.h>
 #include <gsl/assert>
 
-void Terminal::enableRawMode()
+void Terminal::enableRawMode() const
 {
     // We expect to have populated m_terminal with the terminal driver settings
     // Copy these into `copy`, from which we'll make our changes
