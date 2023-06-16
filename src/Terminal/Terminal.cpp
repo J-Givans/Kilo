@@ -34,6 +34,8 @@ Terminal::Terminal()
         std::exit(EXIT_FAILURE);
     }
 
+    m_state = TerminalState::Reset;
+
     Ensures(m_state == TerminalState::Reset);
 }
 
