@@ -9,6 +9,40 @@
 #include <fmt/core.h>
 #include <gsl/assert>
 
+/// \details Query the terminal driver and write its settings to m_terminal
+/// \details Exit the program if this fails
+Terminal::Terminal()
+{
+    Expects(m_state == TerminalState::Reset);
+
+    // Attempt to query the terminal driver and write its settings to m_terminal
+    // If this fails, log the error and exit the program with status EXIT_FAILURE
+    if (errno = 0; tcgetattr(STDIN_FILENO, &m_terminal) == -1) {
+        fmt::print(stderr, "tcgetattr failed: {}", std::strerror(errno));
+        std::exit(EXIT_FAILURE);
+    }
+
+    Ensures(m_state == TerminalState::Reset);
+}
+
+/// \details Reset the terminal driver to canonical mode
+/// \details Exits the program if this fails
+Terminal::~Terminal()
+{
+    Expects(m_state == TerminalState::Raw);
+
+    // Attempt to set the terminal driver settings to those in m_terminal
+    // If this fails, log the error that occured and exit the program with status EXIT_FAILURE
+    if (errno = 0; tcsetattr(STDIN_FILENO, TCSAFLUSH, &m_terminal) == -1) {
+        fmt::print(stderr, "tcsetattr failed: {}", std::strerror(errno));
+        std::exit(EXIT_FAILURE);
+    }
+
+    m_state = TerminalState::Reset;
+
+    Ensures(m_state == TerminalState::Reset);
+}
+
 void Terminal::enableRawMode()
 {
     Expects(m_state == TerminalState::Reset);
@@ -66,38 +100,4 @@ void Terminal::enableRawMode()
     m_state = TerminalState::Raw;
 
     Ensures(m_state == TerminalState::Raw);
-}
-
-/// \details Query the terminal driver and write its settings to m_terminal
-/// \details Exit the program if this fails
-Terminal::Terminal()
-{
-    Expects(m_state == TerminalState::Reset);
-
-    // Attempt to query the terminal driver and write its settings to m_terminal
-    // If this fails, log the error and exit the program with status EXIT_FAILURE
-    if (errno = 0; tcgetattr(STDIN_FILENO, &m_terminal) == -1) {
-        fmt::print(stderr, "tcgetattr failed: {}", std::strerror(errno));
-        std::exit(EXIT_FAILURE);
-    }
-
-    Ensures(m_state == TerminalState::Reset);
-}
-
-/// \details Reset the terminal driver to canonical mode
-/// \details Exits the program if this fails
-Terminal::~Terminal()
-{
-    Expects(m_state == TerminalState::Raw);
-
-    // Attempt to set the terminal driver settings to those in m_terminal
-    // If this fails, log the error that occured and exit the program with status EXIT_FAILURE
-    if (errno = 0; tcsetattr(STDIN_FILENO, TCSAFLUSH, &m_terminal) == -1) {
-        fmt::print(stderr, "tcsetattr failed: {}", std::strerror(errno));
-        std::exit(EXIT_FAILURE);
-    }
-
-    m_state = TerminalState::Reset;
-
-    Ensures(m_state == TerminalState::Reset);
 }
