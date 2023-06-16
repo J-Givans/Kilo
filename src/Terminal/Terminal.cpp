@@ -30,7 +30,7 @@ Terminal::Terminal()
     // Attempt to query the terminal driver and write its settings to m_terminal
     // If this fails, log the error and exit the program with status EXIT_FAILURE
     if (errno = 0; tcgetattr(STDIN_FILENO, &m_terminal) == -1) {
-        fmt::print(stderr, "tcgetattr failed: {}", std::strerror(errno));
+        fmt::print(stderr, "Could not get attributes of terminal driver: {}", std::strerror(errno));
         std::exit(EXIT_FAILURE);
     }
 
@@ -46,7 +46,7 @@ Terminal::~Terminal()
     // Attempt to set the terminal driver settings to those in m_terminal
     // If this fails, log the error that occured and exit the program with status EXIT_FAILURE
     if (errno = 0; tcsetattr(STDIN_FILENO, TCSAFLUSH, &m_terminal) == -1) {
-        fmt::print(stderr, "tcsetattr failed: {}", std::strerror(errno));
+        fmt::print(stderr, "Could not reset terminal driver to canonical mode: {}", std::strerror(errno));
         std::exit(EXIT_FAILURE);
     }
 
