@@ -43,6 +43,11 @@ void Terminal::enableRawMode()
     if (errno = 0; tcsetattr(STDIN_FILENO, TCSAFLUSH, &copy) == -1) {
         throw std::system_error(errno, std::generic_category(), std::strerror(errno));
     }
+    else {
+        m_state = TerminalState::Raw;
+    }
+
+    Ensures(m_state == TerminalState::Raw);
 }
 
 /// \details Query the terminal driver and write its settings to m_terminal
