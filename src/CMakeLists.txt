@@ -10,10 +10,6 @@ target_sources(lib
         lib/write/write.cpp
         lib/ioctl/ioctl.hpp
         lib/ioctl/ioctl.cpp
-        lib/tcgetattr/tcgetattr.hpp
-        lib/tcgetattr/tcgetattr.cpp
-        lib/tcsetattr/tcsetattr.hpp
-        lib/tcsetattr/tcsetattr.cpp
         lib/winsize/winsize.hpp
         lib/winsize/winsize.cpp
 )
