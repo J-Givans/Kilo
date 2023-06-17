@@ -41,7 +41,7 @@ Terminal::Terminal()
 /// \details Exits the program if this fails
 Terminal::~Terminal()
 {
-    Expects(m_state == TerminalState::Raw);
+    Expects(m_state == TerminalState::Raw or m_state == TerminalState::Reset);
 
     // Attempt to set the terminal driver settings to those in m_terminal
     // If this fails, log the error that occured and exit the program with status EXIT_FAILURE
