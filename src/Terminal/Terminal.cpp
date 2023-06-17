@@ -55,6 +55,11 @@ Terminal::~Terminal()
     Ensures(m_state == TerminalState::Reset);
 }
 
+Terminal::TerminalState Terminal::getState() const noexcept
+{
+    return m_state;
+}
+
 void Terminal::enableRawMode()
 {
     Expects(m_state == TerminalState::Reset);

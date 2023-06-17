@@ -13,6 +13,10 @@ public:
     /// \brief Set the terminal driver into raw mode
     void enableRawMode();
 
+    /// \brief Get the current state of the terminal driver
+    /// \brief For testing purposes only!
+    TerminalState getState() const noexcept;
+
 private:
     termios m_terminal;
     TerminalState m_state;
