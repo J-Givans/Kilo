@@ -43,14 +43,16 @@ Terminal::~Terminal()
 {
     Expects(m_state == TerminalState::Raw or m_state == TerminalState::Reset);
 
-    // Attempt to set the terminal driver settings to those in m_terminal
-    // If this fails, log the error that occured and exit the program with status EXIT_FAILURE
-    if (errno = 0; tcsetattr(STDIN_FILENO, TCSAFLUSH, &m_terminal) == -1) {
-        fmt::print(stderr, "Could not reset terminal driver to canonical mode: {}", std::strerror(errno));
-        std::exit(EXIT_FAILURE);
-    }
+    if (m_state == TerminalState::Raw) {
+        // Attempt to set the terminal driver settings to those in m_terminal
+        // If this fails, log the error that occured and exit the program with status EXIT_FAILURE
+        if (errno = 0; tcsetattr(STDIN_FILENO, TCSAFLUSH, &m_terminal) == -1) {
+            fmt::print(stderr, "Could not reset terminal driver to canonical mode: {}", std::strerror(errno));
+            std::exit(EXIT_FAILURE);
+        }
 
-    m_state = TerminalState::Reset;
+        m_state = TerminalState::Reset;
+    }
 
     Ensures(m_state == TerminalState::Reset);
 }
