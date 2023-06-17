@@ -31,6 +31,8 @@ target_compile_options(lib PRIVATE -Wall -Wextra)
 
 find_package(fmt REQUIRED)
 
+find_package(Microsoft.GSL REQUIRED)
+
 target_sources(kilo
     PUBLIC 
         ${CMAKE_CURRENT_SOURCE_DIR}/Terminal/Terminal.cpp
@@ -50,8 +52,10 @@ target_sources(kilo
 target_include_directories(kilo PUBLIC ../includes)
 
 target_link_libraries(kilo 
-    PRIVATE lib
-    PRIVATE fmt::fmt
+    PRIVATE
+        lib
+        fmt::fmt
+        Microsoft.GSL::GSL
 )
 
 target_compile_features(kilo PRIVATE cxx_std_20)

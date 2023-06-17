@@ -3,22 +3,24 @@
 
 #include <termios.h>
 
-#include <utility>
-
-class Terminal {
+class Terminal 
+{
 public:
+    enum class TerminalState { Reset, Raw };
+
     Terminal();
     ~Terminal();
 
-    /** Disable copy and move semantics */
-    Terminal(Terminal const&) = delete;
-    Terminal& operator=(Terminal const&) = delete;
-
+    /// \brief Set the terminal driver into raw mode
     void enableRawMode();
-    void disableRawMode();
+
+    /// \brief Get the current state of the terminal driver
+    /// \brief For testing purposes only!
+    TerminalState getState() const noexcept;
 
 private:
-    struct termios m_terminal {};
+    termios m_terminal;
+    TerminalState m_state;
 };
 
 #endif

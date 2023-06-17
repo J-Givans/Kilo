@@ -78,6 +78,14 @@ void Cursor::moveCursor(Key const& key)
 */
 Editor::Editor()
 {
+    try {
+        m_terminalCtrl.enableRawMode();
+    }
+    catch (std::system_error const& sysErr) {
+        fmt::print(stderr, "Exception: {}\nExiting the program...\n", sysErr.what());
+        std::exit(EXIT_FAILURE);
+    }
+    
     m_winsize.row -= 1;
 }
 
