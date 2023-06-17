@@ -3,7 +3,8 @@
 
 #include <termios.h>
 
-class Terminal {
+class Terminal 
+{
 public:
     enum class TerminalState { Reset, Raw };
 
