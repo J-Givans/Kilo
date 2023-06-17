@@ -25,8 +25,6 @@ namespace
 /// \details Exit the program if this fails
 Terminal::Terminal()
 {
-    Expects(m_state == TerminalState::Default);
-
     // Attempt to query the terminal driver and write its settings to m_terminal
     // If this fails, log the error and exit the program with status EXIT_FAILURE
     if (errno = 0; tcgetattr(STDIN_FILENO, &m_terminal) == -1) {
